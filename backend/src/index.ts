@@ -1,13 +1,16 @@
 import { WebSocketServer } from 'ws';
-
+import messageHandler from "./handler"
 const wss = new WebSocketServer({ port: 8080 });
 
 wss.on('connection', function connection(ws) {
-  ws.on('error', console.error);
+  ws.send("connected");
 
-  ws.on('message', function message(data) {
-    console.log('received: %s', data);
-  });
+  ws.on('message', function (data) {
 
-  ws.send('something');
+    messageHandler(ws,data)
+
+  })
+
 });
+
+console.log("Hello, TypeScript with Nodemon!");
