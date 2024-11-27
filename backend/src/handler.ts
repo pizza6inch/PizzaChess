@@ -14,7 +14,6 @@ export const messageHandler = (ws: WebSocket,data:RawData) => {
             case 'createGame':
                 createGame(ws,payload);
             break;
-                
             case 'joinGame':
                 joinGame(ws,payload);
                 break;
@@ -35,8 +34,7 @@ export const errorHandler = (ws:WebSocket,e:any,errorMessage:string) => {
 
     const response = {
         type:'error',
-        error:error,
-        payload:errorMessage
+        payload:{errorMessage,error}
     }
 
     ws.send(JSON.stringify(response));

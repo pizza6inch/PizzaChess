@@ -11,6 +11,12 @@ wss.on('connection', function connection(ws) {
 
   })
 
+  ws.on('close', function () {
+
+    handleDisconnect(ws);
+
+  });
+
 });
 
 console.log("Hello, TypeScript with Nodemon!");

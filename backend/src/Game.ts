@@ -3,6 +3,7 @@ import { User } from './User';
 export class Game {
     public white: User | null; // 白棋玩家
     public black: User | null; // 黑棋玩家
+    private gameOwnerToken: string; // 遊戲擁有者的 token
     private spectators: User[]; // 觀察者
     private moves: string[]; // 移動記錄
     private remainingTime: number; // 剩餘時間
@@ -19,12 +20,13 @@ export class Game {
         this.gameState = "waiting"; // 初始為等待狀態
         this.gameId = gameId;
         this.isWhiteTurn = true;
+        this.gameOwnerToken = "";
     }
 
     // 玩家加入遊戲
     public addPlayer(user: User, role: "white" | "black" | "spectator"): boolean {
         if (this.gameState !== "waiting") {
-            console.log("遊戲已開始，無法加入！");
+            throw new Error("無法加入遊戲！");
             return false;
         }
 
@@ -42,8 +44,7 @@ export class Game {
             return true;
         }
 
-        console.log("加入失敗：顏色已被選擇或無法加入");
-        return false;
+        throw new Error("無法加入遊戲！");
     }
 
     // 開始遊戲
@@ -117,6 +118,7 @@ export class Game {
     public getGameInfo() {
         return {
             gameId: this.gameId,
+            gameOwnerToken: this.gameOwnerToken,
             white: this.white,
             black: this.black,
             spectators: this.spectators,
@@ -128,5 +130,12 @@ export class Game {
 
     public isPlayerInGame(user: User): boolean {
         return user.id === this.white?.id || user.id === this.black?.id || this.spectators.some((spectator) => spectator.id === user.id);
+    }
+
+    public setGameOwnerToken(gameOwnerToken: string) {
+        this.gameOwnerToken = gameOwnerToken;
+    }
+    public isMatchToken(token:string): boolean {
+        return this.gameOwnerToken === token;
     }
 }

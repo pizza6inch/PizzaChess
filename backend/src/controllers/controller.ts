@@ -1,4 +1,4 @@
-import {registerPayload,LoginPayload,CreateGamePayload,JoinGamePayload} from "../type"
+import {registerPayload,CreateGamePayload,JoinGamePayload,leaveGamePayload,spectateGamePayload,startGamePayload,makeMovePayload} from "../type"
 import { broadcast, errorHandler } from "../handler";
 
 const jwt = require('jsonwebtoken');
@@ -9,7 +9,7 @@ import {Game} from "../Game"
 import {User} from "../User"
 
 const games:Game[] = []
-const users = new Map<string, User>();
+const users = new Map<string, User>(); // key: playerToken, value: User
 const WebSockets:WebSocket[] = [];
 let userCount = 0;
 
@@ -51,11 +51,11 @@ const register = (ws:WebSocket,payload:registerPayload) => {
 const createGame = (ws:WebSocket,payload:CreateGamePayload) => {
 
     try{
-        const {token,playWhite,timeLimit = 60 * 10} = payload;
-        const user = users.get(token);
+        const {playerToken,playWhite,timeLimit = 60 * 10} = payload;
+        const user = users.get(playerToken);
 
         if(!user){
-            throw new Error('invalid token');
+            throw new Error('invalid playerToken');
         }
 
         // check if the user is already in a game
@@ -70,9 +70,8 @@ const createGame = (ws:WebSocket,payload:CreateGamePayload) => {
         game.addPlayer(user,playWhite ? 'white' : 'black');
         games.push(game);
 
-        const gameOwnerToken = generateToken(user.id,game.gameId);
-
-        
+        const gameOwnerToken = generateToken(game.gameId,user.id);
+        game.setGameOwnerToken(gameOwnerToken);
         const response = {
             type:'createGame',
             payload:{
@@ -95,11 +94,11 @@ const createGame = (ws:WebSocket,payload:CreateGamePayload) => {
 
 const joinGame = (ws:WebSocket,payload:JoinGamePayload) => {
     try{
-        const {token,gameId} = payload;
-        const user = users.get(token);
+        const {playerToken,gameId} = payload;
+        const user = users.get(playerToken);
 
         if(!user){
-            throw new Error('invalid token');
+            throw new Error('invalid playerToken');
         }
 
         // check if the user is already in a game
@@ -145,11 +144,95 @@ const joinGame = (ws:WebSocket,payload:JoinGamePayload) => {
     }
 }
 
+const leaveGame = (ws:WebSocket,payload:leaveGamePayload) => {
+    
+        try{
+            const {playerToken,gameId} = payload;
+            const user = users.get(playerToken);
+    
+            if(!user){
+                throw new Error('invalid playerToken');
+            }
+    
+            const game = games.find(game => game.gameId === gameId);
+    
+            if(!game){
+                throw new Error('game not found');
+            }
+    
+            if(!game.isPlayerInGame(user)){
+                throw new Error('user not in game');
+            }
+    
+            game.leaveGame(user);
+    
+            const response = {
+                type:'leaveGame',
+                payload:{
+                    gameId
+                }
+            }
+    
+            console.log(JSON.stringify(response));
+            ws.send(JSON.stringify(response));
+            broadcast(WebSockets,{ games: games.map(game => game.getGameInfo()) });
+        } catch (e) {
+            console.log(`errorMessage: leaveGameError ${e}`)
+            errorHandler(ws,e,`Leave Game error`);
+        }
+}
 
-const generateToken = (userId:string,password:string) => {
+const spectateGame = (ws:WebSocket,payload:JoinGamePayload) => {
+    try{
+        const {playerToken,gameId} = payload;
+        const user = users.get(playerToken);
+
+        if(!user){
+            throw new Error('invalid playerToken');
+        }
+
+        // check if the user is already in a game
+        for(const game of games){
+            if(game.isPlayerInGame(user)){
+                throw new Error('user already in a game');
+            }
+        }
+
+        const game = games.find(game => game.gameId === gameId);
+
+        if(!game){
+            throw new Error('game not found');
+        }
+
+        game.addPlayer(user,"spectator");
+
+        const response = {
+            type:'spectateGame',
+            payload:{
+                gameId
+            }
+        }
+
+        console.log(JSON.stringify(response));
+        ws.send(JSON.stringify(response));
+        broadcast(WebSockets,{ games: games.map(game => game.getGameInfo()) });
+    } catch (e) {
+        console.log(`errorMessage: spectateGameError ${e}`)
+        errorHandler(ws,e,`Spectate Game error`);
+    }
+}
+
+const startGame = (ws:WebSocket,payload:JoinGamePayload) => {}
+
+const makeMove = (ws:WebSocket,payload:JoinGamePayload) => {}
+
+const handleDisconnect = (ws:WebSocket) => {}
+
+
+const generateToken = (id:string,dependency:string) => {
     const payload = {
-        userId,
-        password
+        id,
+        dependency
     }
 
     const secretKey = 'secretKey';
@@ -159,4 +242,4 @@ const generateToken = (userId:string,password:string) => {
 }
 
 
-export {register ,createGame,joinGame}
+export {register ,createGame,joinGame,leaveGame,spectateGame,startGame,makeMove,handleDisconnect}
