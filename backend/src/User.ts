@@ -4,14 +4,21 @@ export class User {
     public displayName: string;
     private email: string;
     private rating: Number;
-    private ws:WebSocket;
-    constructor(id: string, displayName: string, email: string, rating: number,ws:WebSocket) {
+    
+    constructor(id: string, displayName: string, email: string, rating: number) {
         this.id = id;
         this.displayName = displayName;
         this.email = email;
         this.rating = rating;
-        this.ws = ws
     }
 
+    public getInfo(){
+        return {
+            id:this.id,
+            displayName:this.displayName,
+            email:this.email,
+            rating:this.rating
+        }
+    }
 
 }

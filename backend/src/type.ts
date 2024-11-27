@@ -1,11 +1,22 @@
+import { User } from "./User"
+
+
+
+type registerPayload = {
+    displayName:string,
+    email:string,
+    rating:number
+    password:string
+}
+
 type CreateGamePayload =  {
-    userId:string,
+    token:string,
     playWhite:boolean,
     timeLimit:number
 }
 
 type JoinGamePayload = {
-    userId:string,
+    token:string,
     gameId:string,
 }
 
@@ -13,4 +24,4 @@ type JoinGamePayload = {
 
 
 
-export { CreateGamePayload, JoinGamePayload }
+export {registerPayload,LoginPayload, CreateGamePayload, JoinGamePayload }

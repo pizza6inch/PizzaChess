@@ -1,18 +1,22 @@
 import {WebSocket,RawData} from 'ws'
 
-import {CreateGamePayload,JoinGamePayload} from "./type"
+import {register,createGame,joinGame} from "./controllers/controller"
 
 
-const messageHandler = (ws: WebSocket,data:RawData) => {
+export const messageHandler = (ws: WebSocket,data:RawData) => {
     try{
         const {type,payload} = JSON.parse(data.toString());
         switch(type){
-            case 'createGame':
-                const {userId,playWhite = true,timeLimit = 60 * 10}:CreateGamePayload = payload;
-                console.log(userId,playWhite,timeLimit);
-            break;
 
+            case 'register':
+                register(ws,payload);
+                break;
+            case 'createGame':
+                createGame(ws,payload);
+            break;
+                
             case 'joinGame':
+                joinGame(ws,payload);
                 break;
             default:
                 break;
@@ -21,13 +25,32 @@ const messageHandler = (ws: WebSocket,data:RawData) => {
         }
     } catch (e) {
         console.log(`errorMessage: ${e}`)
-        errorHandler(ws,"please send valid json format data")
+        errorHandler(ws,e,`please check the message format`);
     }
 }
 
-const errorHandler = (ws:WebSocket,errorMessage:string) => {
+export const errorHandler = (ws:WebSocket,e:any,errorMessage:string) => {
 
-    ws.send(errorMessage);
+    const error = `errorMessage: ${e instanceof Error ? e.message : e.toString()}`;
+
+    const response = {
+        type:'error',
+        error:error,
+        payload:errorMessage
+    }
+
+    ws.send(JSON.stringify(response));
 }
 
-export default messageHandler;
+export const broadcast = (WebSockets:WebSocket[],data:any) => {
+    const response = {
+        type:'broadcast',
+        payload:data
+    }
+
+    for(const client of WebSockets){
+        client.send(JSON.stringify(response));
+    }
+}
+
+// export function {messageHandler,errorHandler};

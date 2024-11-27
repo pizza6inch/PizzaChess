@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws';
-import messageHandler from "./handler"
+import {messageHandler} from "./handler"
 const wss = new WebSocketServer({ port: 8080 });
 
 wss.on('connection', function connection(ws) {

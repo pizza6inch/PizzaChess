@@ -1,38 +1,42 @@
 import { User } from './User';
 
 export class Game {
-    private white: User | null; // 白棋玩家
-    private black: User | null; // 黑棋玩家
+    public white: User | null; // 白棋玩家
+    public black: User | null; // 黑棋玩家
     private spectators: User[]; // 觀察者
     private moves: string[]; // 移動記錄
     private remainingTime: number; // 剩餘時間
     private gameState: string; // 遊戲狀態，例如 "waiting", "in-progress", "finished"
+    public gameId: string; // 房間 ID
+    private isWhiteTurn: boolean; // 是否輪到白棋玩家
 
-    constructor(private roomId: string, private timeLimit: number = 300) {
+    constructor(gameId: string, private timeLimit: number = 300) {
         this.white = null;
         this.black = null;
         this.spectators = [];
         this.moves = [];
         this.remainingTime = timeLimit;
         this.gameState = "waiting"; // 初始為等待狀態
+        this.gameId = gameId;
+        this.isWhiteTurn = true;
     }
 
     // 玩家加入遊戲
-    public addPlayer(user: User, color: "white" | "black" | "spectator"): boolean {
+    public addPlayer(user: User, role: "white" | "black" | "spectator"): boolean {
         if (this.gameState !== "waiting") {
             console.log("遊戲已開始，無法加入！");
             return false;
         }
 
-        if (color === "white" && !this.white) {
+        if (role === "white" && !this.white) {
             this.white = user;
             console.log(`${user.displayName} 加入為白棋玩家`);
             return true;
-        } else if (color === "black" && !this.black) {
+        } else if (role === "black" && !this.black) {
             this.black = user;
             console.log(`${user.displayName} 加入為黑棋玩家`);
             return true;
-        } else if (color === "spectator") {
+        } else if (role === "spectator") {
             this.spectators.push(user);
             console.log(`${user.displayName} 加入為觀察者`);
             return true;
@@ -68,6 +72,11 @@ export class Game {
 
         if (user.id !== this.white?.id && user.id !== this.black?.id) {
             console.log("該玩家不在遊戲中！");
+            return false;
+        }
+
+        if ((this.isWhiteTurn && user.id !== this.white?.id) || (!this.isWhiteTurn && user.id !== this.black?.id)) {
+            console.log("不是該玩家的回合！");
             return false;
         }
 
@@ -107,7 +116,7 @@ export class Game {
     // 獲取遊戲資訊
     public getGameInfo() {
         return {
-            roomId: this.roomId,
+            gameId: this.gameId,
             white: this.white,
             black: this.black,
             spectators: this.spectators,
@@ -115,5 +124,9 @@ export class Game {
             remainingTime: this.remainingTime,
             gameState: this.gameState,
         };
+    }
+
+    public isPlayerInGame(user: User): boolean {
+        return user.id === this.white?.id || user.id === this.black?.id || this.spectators.some((spectator) => spectator.id === user.id);
     }
 }
