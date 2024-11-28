@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="33f3bda3-61f4-4229-8e3f-2df9c4a2663a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/nodemon.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/Game.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/User.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/handler.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/lobby.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/type.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/tsconfig.json" beforeDir="false" />
-    </list>
+    <list default="true" id="33f3bda3-61f4-4229-8e3f-2df9c4a2663a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,7 +70,7 @@
       <updated>1732583885976</updated>
       <workItem from="1732583887027" duration="105000" />
       <workItem from="1732584075270" duration="3894000" />
-      <workItem from="1732617504130" duration="4740000" />
+      <workItem from="1732617504130" duration="5136000" />
     </task>
     <servers />
   </component>

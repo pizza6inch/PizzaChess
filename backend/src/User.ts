@@ -1,24 +1,39 @@
+import WebSocket from "ws";
 
 export class User {
-    public id: string;
-    public displayName: string;
-    private email: string;
-    private rating: Number;
-    
-    constructor(id: string, displayName: string, email: string, rating: number) {
-        this.id = id;
-        this.displayName = displayName;
-        this.email = email;
-        this.rating = rating;
-    }
+  public id: string;
+  public displayName: string;
+  private email: string;
+  private rating: Number;
+  public ws: WebSocket;
+  public isInGame: boolean;
 
-    public getInfo(){
-        return {
-            id:this.id,
-            displayName:this.displayName,
-            email:this.email,
-            rating:this.rating
-        }
-    }
+  constructor(
+    id: string,
+    displayName: string,
+    email: string,
+    rating: number,
+    ws: WebSocket
+  ) {
+    this.id = id;
+    this.displayName = displayName;
+    this.email = email;
+    this.rating = rating;
+    this.ws = ws;
+    this.isInGame = false;
+  }
 
+  public setNewWs(ws: WebSocket) {
+    this.ws = ws;
+  }
+
+  public getInfo() {
+    return {
+      id: this.id,
+      displayName: this.displayName,
+      email: this.email,
+      rating: this.rating,
+      isInGame: this.isInGame,
+    };
+  }
 }
