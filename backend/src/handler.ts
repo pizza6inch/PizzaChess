@@ -44,28 +44,17 @@ export const messageHandler = (ws: WebSocket, data: RawData) => {
   }
 };
 
-export const errorHandler = (ws: WebSocket, e: any, errorMessage: string) => {
+export const errorHandler = (ws: WebSocket, e: any, errorType: string) => {
   const error = `errorMessage: ${
     e instanceof Error ? e.message : e.toString()
   }`;
 
   const response = {
     type: "error",
-    payload: { errorMessage, error },
+    payload: { errorType, error },
   };
 
   ws.send(JSON.stringify(response));
-};
-
-export const broadcast = (WebSockets: WebSocket[], data: any) => {
-  const response = {
-    type: "broadcast",
-    payload: data,
-  };
-
-  for (const client of WebSockets) {
-    client.send(JSON.stringify(response));
-  }
 };
 
 // export function {messageHandler,errorHandler};
