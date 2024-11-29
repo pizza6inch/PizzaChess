@@ -68,6 +68,7 @@ export const WebSocketProvider: React.FC<{
           break;
       }
       toast.success(type);
+      console.log("WebSocket message", type, payload);
     };
 
     ws.current.onclose = () => {
