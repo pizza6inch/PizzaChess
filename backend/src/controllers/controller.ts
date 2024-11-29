@@ -82,6 +82,7 @@ const createGame = (ws: WebSocket, payload: CreateGamePayload) => {
     gameCount += 1;
     const game = new Game(gameId, timeLimit);
     game.addPlayer(user, playWhite ? "white" : "black");
+    user.isInGame = true;
 
     const gameOwnerToken = generateToken(game.gameId, user.id);
 
@@ -149,6 +150,8 @@ const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
       game.addPlayer(user, "white");
     }
 
+    user.isInGame = true;
+
     const response = {
       type: "joinGameSuccess",
       payload: {
@@ -193,6 +196,8 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
     }
 
     game.leaveGame(user);
+
+    user.isInGame = false;
 
     const response = {
       type: "leaveGameSuccess",
@@ -243,6 +248,8 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
     }
 
     game.addPlayer(user, "spectator");
+
+    user.isInGame = true;
 
     const response = {
       type: "spectateGameSuccess",
