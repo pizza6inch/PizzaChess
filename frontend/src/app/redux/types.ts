@@ -2,6 +2,7 @@ import { Chess } from "chess.js";
 
 type RegisterSuccessPayload = {
   playerToken: string;
+  playerInfo: player;
 };
 
 type CreateGameSuccessPayload = {

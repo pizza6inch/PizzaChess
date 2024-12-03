@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
-import { WebSocketProvider } from "./components/WebSocketProvider";
-import Test from "./components/Test";
+import { WebSocketProvider } from "../components/WebSocketProvider";
+import Test from "../components/Test";
+import "@/app/global.css";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // 必須導入樣式

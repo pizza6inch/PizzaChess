@@ -19,6 +19,7 @@ type InitialState = {
   games: GameInfo[]; // 通用訊息的陣列
   playerInfo: player;
   playerToken: string;
+  gameOwnerToken: string;
   currentGame: GameDetail | null;
 };
 
@@ -26,6 +27,7 @@ type InitialState = {
 const initialState: InitialState = {
   games: [],
   playerToken: "",
+  gameOwnerToken: "",
   playerInfo: {
     id: "",
     displayName: "",
@@ -42,15 +44,17 @@ const webSocketSlice = createSlice({
   initialState,
   reducers: {
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
-      const { playerToken } = action.payload;
+      const { playerToken, playerInfo } = action.payload;
       state.playerToken = playerToken;
+      state.playerInfo = playerInfo;
     },
     createGameSuccess: (
       state,
       action: PayloadAction<CreateGameSuccessPayload>
     ) => {
-      const { gameDetail } = action.payload;
+      const { gameDetail, gameOwnerToken } = action.payload;
       state.currentGame = gameDetail;
+      state.gameOwnerToken = gameOwnerToken;
     },
     joinGameSuccess: (state, action: PayloadAction<JoinGameSuccessPayload>) => {
       const { gameDetail } = action.payload;
