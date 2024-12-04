@@ -26,12 +26,16 @@ type StartGameSuccessPayload = {
   gameDetail: GameDetail;
 };
 
-type AllGameStatusPayload = {
-  games: GameInfo[];
-};
-
 type leaveGameSuccessPayload = {
   gameId: string;
+};
+
+type makeMoveSuccessPayload = {
+  gameId: string;
+};
+
+type AllGameStatusPayload = {
+  games: GameInfo[];
 };
 
 type GameDetailPayload = {
@@ -77,6 +81,7 @@ export type {
   SpectateGameSuccessPayload,
   StartGameSuccessPayload,
   leaveGameSuccessPayload,
+  makeMoveSuccessPayload,
   GameInfo,
   GameDetail,
   player,

@@ -9,6 +9,7 @@ import {
   SpectateGameSuccessPayload,
   StartGameSuccessPayload,
   leaveGameSuccessPayload,
+  makeMoveSuccessPayload,
   GameInfo,
   GameDetail,
   player,
@@ -81,6 +82,9 @@ const webSocketSlice = createSlice({
       const { gameId } = action.payload;
       state.currentGame = null;
     },
+    makeMoveSuccess: (state, action: PayloadAction<makeMoveSuccessPayload>) => {
+      const { gameId } = action.payload;
+    },
     setAllGameStatus: (state, action: PayloadAction<AllGameStatusPayload>) => {
       const { games } = action.payload;
       state.games = games;
@@ -102,6 +106,7 @@ export const {
   setGameDetail,
   startGameSuccess,
   leaveGameSuccess,
+  makeMoveSuccess,
 } = webSocketSlice.actions;
 
 export default webSocketSlice;

@@ -45,9 +45,7 @@ export const messageHandler = (ws: WebSocket, data: RawData) => {
 };
 
 export const errorHandler = (ws: WebSocket, e: any, errorType: string) => {
-  const error = `errorMessage: ${
-    e instanceof Error ? e.message : e.toString()
-  }`;
+  const error = `${e instanceof Error ? e.message : e.toString()}`;
 
   const response = {
     type: "error",

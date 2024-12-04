@@ -5,13 +5,13 @@ import { RootState } from "../app/redux/store";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { log } from "console";
 
 const Test = () => {
   const { sendMessage } = useWebSocket();
 
-  const { playerToken, games, playerInfo } = useSelector(
-    (state: RootState) => state.websocket
-  );
+  const { playerToken, gameOwnerToken, games, playerInfo, currentGame } =
+    useSelector((state: RootState) => state.websocket);
 
   const [gameId, setGameId] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -46,7 +46,7 @@ const Test = () => {
   const handleLeaveGame = () => {
     const payload = {
       playerToken: playerToken,
-      gameId: gameId,
+      gameId: currentGame?.gameId,
     };
     sendMessage("leaveGame", payload);
   };
@@ -61,9 +61,9 @@ const Test = () => {
 
   const handleStartGame = () => {
     const payload = {
-      gameOwnerToken: playerToken,
+      gameOwnerToken: gameOwnerToken,
       playerToken: playerToken,
-      gameId: gameId,
+      gameId: currentGame?.gameId,
     };
     sendMessage("startGame", payload);
   };
@@ -84,14 +84,14 @@ const Test = () => {
           <Input type="text" onChange={(e) => setGameId(e.target.value)} />
         </div>
         <div className=" flex w-[400px] justify-between">
-          <Button>Leave Game</Button>
+          <Button onClick={handleLeaveGame}>Leave Game</Button>
         </div>
         <div className="flex w-[400px] justify-between">
-          <Button>Spectate Game</Button>
+          <Button onClick={handleSpectateGame}>Spectate Game</Button>
           <Input type="text" />
         </div>
         <div className="flex w-[400px] justify-between">
-          <Button>Start Game</Button>
+          <Button onClick={handleStartGame}>Start Game</Button>
         </div>
       </div>
       <div>

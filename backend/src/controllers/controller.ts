@@ -46,11 +46,12 @@ const register = (ws: WebSocket, payload: registerPayload) => {
       type: "registerSuccess",
       payload: {
         playerToken,
+        playerInfo: user.getInfo(),
       },
     };
 
     ws.send(JSON.stringify(response));
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
 
     broadcastAllGameStatus();
   } catch (e) {
@@ -86,6 +87,8 @@ const createGame = (ws: WebSocket, payload: CreateGamePayload) => {
 
     const gameOwnerToken = generateToken(game.gameId, user.id);
 
+    game.setGameOwnerToken(gameOwnerToken);
+
     games.set(gameOwnerToken, game);
 
     const response = {
@@ -93,11 +96,12 @@ const createGame = (ws: WebSocket, payload: CreateGamePayload) => {
       payload: {
         gameId,
         gameDetail: game.getGameDetail(),
+        gameOwnerToken,
       },
     };
 
     ws.send(JSON.stringify(response));
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
 
     broadcastAllGameStatus();
   } catch (e) {
@@ -144,9 +148,7 @@ const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
 
     if (game.white) {
       game.addPlayer(user, "black");
-    }
-
-    if (game.black) {
+    } else if (game.black) {
       game.addPlayer(user, "white");
     }
 
@@ -160,7 +162,7 @@ const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
       },
     };
     ws.send(JSON.stringify(response));
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
 
     broadcastAllGameStatus();
   } catch (e) {
@@ -197,6 +199,17 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
 
     game.leaveGame(user);
 
+    console.log(games);
+    console.log(game.getGameOwnerToken());
+
+    if (
+      game.getGameDetail().gameState === "finished" ||
+      (game.white === null && game.black === null)
+    ) {
+      games.delete(game.getGameOwnerToken());
+    }
+    // console.log(games);
+
     user.isInGame = false;
 
     const response = {
@@ -206,7 +219,7 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
       },
     };
 
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
     ws.send(JSON.stringify(response));
 
     broadcastAllGameStatus();
@@ -259,7 +272,7 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
       },
     };
 
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
     ws.send(JSON.stringify(response));
 
     broadcastAllGameStatus();
@@ -283,6 +296,7 @@ const startGame = (ws: WebSocket, payload: startGamePayload) => {
       user.setNewWs(ws);
       WebSockets.push(ws);
     }
+    console.log(gameOwnerToken);
 
     const game = games.get(gameOwnerToken);
 
@@ -299,7 +313,7 @@ const startGame = (ws: WebSocket, payload: startGamePayload) => {
         game: game.getGameDetail(),
       },
     };
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
     ws.send(JSON.stringify(response));
 
     broadcastAllGameStatus();
@@ -337,6 +351,10 @@ const makeMove = (ws: WebSocket, payload: makeMovePayload) => {
     game.makeMove(user, move);
 
     broadcastGameDetail(game);
+
+    if (game.getGameDetail().gameState === "finished") {
+      games.delete(game.getGameOwnerToken());
+    }
   } catch (e) {
     console.log(`errorMessage: makeMoveError ${e}`);
     errorHandler(ws, e, `MakeMove`);
@@ -377,7 +395,7 @@ const broadcastAllGameStatus = () => {
   for (const client of WebSockets) {
     client.send(JSON.stringify(response));
   }
-  console.log(`broadcastAllGameStatus: ${JSON.stringify(response)}`);
+  console.log(`broadcastAllGameStatus:`);
 };
 
 const broadcastGameDetail = (game: Game) => {
@@ -398,7 +416,7 @@ const broadcastGameDetail = (game: Game) => {
     spectator.ws.send(JSON.stringify(response));
   }
 
-  console.log(`broadcastGameDetail: ${JSON.stringify(response)}`);
+  console.log(`broadcastGameDetail: `);
 };
 
 export {

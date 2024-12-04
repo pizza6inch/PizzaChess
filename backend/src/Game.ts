@@ -12,6 +12,7 @@ export class Game {
   public gameId: string; // 房間 ID
   private isWhiteTurn: boolean; // 是否輪到白棋玩家
   private chess = new Chess(); // 棋盤
+  private winner: User | null; // 勝利者
 
   constructor(gameId: string, private timeLimit: number = 300) {
     this.white = null;
@@ -22,13 +23,13 @@ export class Game {
     this.gameId = gameId;
     this.isWhiteTurn = true;
     this.gameOwnerToken = "";
+    this.winner = null;
   }
 
   // 玩家加入遊戲
   public addPlayer(user: User, role: "white" | "black" | "spectator"): boolean {
     if (this.gameState !== "waiting") {
       throw new Error("無法加入遊戲！");
-      return false;
     }
 
     if (role === "white" && !this.white) {
@@ -60,13 +61,15 @@ export class Game {
 
     this.gameState = "in-progress";
     console.log("遊戲開始！");
-    console.log(this.chess.ascii());
 
     return true;
   }
 
   // 玩家移動棋子
-  public makeMove(user: User, move: string): boolean {
+  public makeMove(
+    user: User,
+    move: { from: string; to: string; promotion?: string }
+  ): boolean {
     if (this.gameState !== "in-progress") {
       throw new Error("遊戲尚未開始！");
     }
@@ -83,6 +86,17 @@ export class Game {
     }
 
     // 移動邏輯
+    this.chess.move(move);
+    if (this.chess.isGameOver()) {
+      this.gameState = "finished";
+      if (this.chess.isCheckmate()) {
+        this.winner = this.isWhiteTurn ? this.black : this.white;
+        console.log(`${this.winner?.displayName} 獲勝！`);
+      } else {
+        this.winner = null;
+        console.log("和局！");
+      }
+    }
 
     console.log(`${user.displayName} 執行了移動：${move}`);
     return true;
@@ -141,6 +155,7 @@ export class Game {
       remainingTime: this.remainingTime,
       gameState: this.gameState,
       isWhiteTurn: this.isWhiteTurn,
+      winner: this.winner?.getInfo(),
     };
   }
 
@@ -154,6 +169,10 @@ export class Game {
 
   public setGameOwnerToken(gameOwnerToken: string) {
     this.gameOwnerToken = gameOwnerToken;
+  }
+
+  public getGameOwnerToken() {
+    return this.gameOwnerToken;
   }
   public isMatchToken(token: string): boolean {
     return this.gameOwnerToken === token;

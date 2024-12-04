@@ -35,7 +35,11 @@ type startGamePayload = {
 type makeMovePayload = {
   playerToken: string;
   gameId: string;
-  move: string;
+  move: {
+    from: string;
+    to: string;
+    promotion?: string;
+  };
 };
 
 export {
