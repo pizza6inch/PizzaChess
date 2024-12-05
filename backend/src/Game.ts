@@ -3,23 +3,23 @@ import { User } from "./User";
 import { Chess } from "chess.js";
 
 export class Game {
-  public white: User | null; // 白棋玩家
-  public black: User | null; // 黑棋玩家
-  private gameOwnerToken: string; // 遊戲擁有者的 token
-  public spectators: User[]; // 觀察者
-  private remainingTime: number; // 剩餘時間
-  private gameState: string; // 遊戲狀態，例如 "waiting", "in-progress", "finished"
-  public gameId: string; // 房間 ID
-  private isWhiteTurn: boolean; // 是否輪到白棋玩家
-  private chess = new Chess(); // 棋盤
-  private winner: User | null; // 勝利者
+  public white: User | null;
+  public black: User | null;
+  private gameOwnerToken: string;
+  public spectators: User[];
+  private remainingTime: number;
+  private gameState: "waiting" | "in-progress" | "finished";
+  public gameId: string;
+  private isWhiteTurn: boolean;
+  private chess = new Chess();
+  private winner: User | null;
 
   constructor(gameId: string, private timeLimit: number = 300) {
     this.white = null;
     this.black = null;
     this.spectators = [];
     this.remainingTime = timeLimit;
-    this.gameState = "waiting"; // 初始為等待狀態
+    this.gameState = "waiting";
     this.gameId = gameId;
     this.isWhiteTurn = true;
     this.gameOwnerToken = "";
@@ -52,15 +52,15 @@ export class Game {
   // 開始遊戲
   public startGame(): boolean {
     if (!this.white || !this.black) {
-      throw new Error("玩家不足，無法開始遊戲！");
+      throw new Error("not enough player,can't start the game！");
     }
 
     if (this.gameState !== "waiting") {
-      throw new Error("遊戲已經開始！");
+      throw new Error("the game has already started！");
     }
 
     this.gameState = "in-progress";
-    console.log("遊戲開始！");
+    console.log("game start！");
 
     return true;
   }
@@ -71,18 +71,18 @@ export class Game {
     move: { from: string; to: string; promotion?: string }
   ): boolean {
     if (this.gameState !== "in-progress") {
-      throw new Error("遊戲尚未開始！");
+      throw new Error("game is not in progress！");
     }
 
     if (user.id !== this.white?.id && user.id !== this.black?.id) {
-      throw new Error("該玩家不再遊戲中！");
+      throw new Error("the player is not in the game！");
     }
 
     if (
       (this.isWhiteTurn && user.id !== this.white?.id) ||
       (!this.isWhiteTurn && user.id !== this.black?.id)
     ) {
-      throw new Error("還沒輪到該玩家移動！");
+      throw new Error("it's not your turn！");
     }
 
     // 移動邏輯
@@ -91,14 +91,14 @@ export class Game {
       this.gameState = "finished";
       if (this.chess.isCheckmate()) {
         this.winner = this.isWhiteTurn ? this.black : this.white;
-        console.log(`${this.winner?.displayName} 獲勝！`);
+        console.log(`${this.winner?.displayName} win！`);
       } else {
         this.winner = null;
-        console.log("和局！");
+        console.log("draw！");
       }
     }
 
-    console.log(`${user.displayName} 執行了移動：${move}`);
+    console.log(`${user.displayName} made move: ${move}`);
     return true;
   }
 
@@ -106,25 +106,25 @@ export class Game {
   public leaveGame(user: User): boolean {
     if (user.id === this.white?.id) {
       this.white = null;
-      console.log(`${user.displayName} 離開了遊戲（白棋）`);
+      console.log(`${user.displayName} has left the game（white）`);
     } else if (user.id === this.black?.id) {
       this.black = null;
-      console.log(`${user.displayName} 離開了遊戲（黑棋）`);
+      console.log(`${user.displayName} has left the game（black）`);
     } else {
       const index = this.spectators.findIndex(
         (spectator) => spectator.id === user.id
       );
       if (index !== -1) {
         this.spectators.splice(index, 1);
-        console.log(`${user.displayName} 離開了觀察者名單`);
+        console.log(`${user.displayName} has left the game（spectator）`);
       } else {
-        console.log("該玩家不在遊戲中！");
+        console.log("the player is not in the game！");
         return false;
       }
     }
 
     if (this.gameState === "in-progress" && (!this.white || !this.black)) {
-      console.log("遊戲中玩家離開，遊戲結束！");
+      console.log("game end！");
       this.gameState = "finished";
     }
 

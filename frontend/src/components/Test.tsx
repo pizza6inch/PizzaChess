@@ -1,20 +1,30 @@
-import React, { useState } from "react";
-import { useWebSocket } from "./WebSocketProvider";
+"use client"; //
+import React, { useState, useEffect } from "react";
+import { useWebSocket } from "../contexts/WebSocketProvider";
 import { useSelector } from "react-redux";
-import { RootState } from "../app/redux/store";
+import { RootState } from "../redux/store";
+
+import { useRouter } from "next/navigation";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { log } from "console";
 
 const Test = () => {
   const { sendMessage } = useWebSocket();
+
+  const router = useRouter();
 
   const { playerToken, gameOwnerToken, games, playerInfo, currentGame } =
     useSelector((state: RootState) => state.websocket);
 
   const [gameId, setGameId] = useState("");
   const [displayName, setDisplayName] = useState("");
+
+  useEffect(() => {
+    if (currentGame?.gameState === "in-progress") {
+      router.push(`/game/${currentGame.gameId}`);
+    }
+  }, [currentGame, router]);
 
   const handleRegister = () => {
     const payload = {
@@ -88,7 +98,6 @@ const Test = () => {
         </div>
         <div className="flex w-[400px] justify-between">
           <Button onClick={handleSpectateGame}>Spectate Game</Button>
-          <Input type="text" />
         </div>
         <div className="flex w-[400px] justify-between">
           <Button onClick={handleStartGame}>Start Game</Button>
@@ -114,7 +123,12 @@ const Test = () => {
                   ? game.black.displayName
                   : "waiting for player..."}
               </p>
-              <p>Spectators: {game.spectators.join(", ")}</p>
+              <div>
+                Spectators:
+                {game.spectators.map((spectator) => (
+                  <span key={spectator.id}>{spectator.displayName}、</span>
+                ))}{" "}
+              </div>
               <p>Game State: {game.gameState}</p>
             </li>
           ))}

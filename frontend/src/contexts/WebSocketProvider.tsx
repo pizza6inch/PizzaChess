@@ -11,8 +11,7 @@ import {
   setAllGameStatus,
   setGameDetail,
   leaveGameSuccess,
-} from "../app/redux/webSocketSlice";
-import { error } from "console";
+} from "../redux/webSocketSlice";
 
 // 定義 Context 類型
 interface WebSocketContextType {
@@ -70,7 +69,7 @@ export const WebSocketProvider: React.FC<{
       }
       if (type === "error") {
         toast.success(`${payload.errorType}: ${payload.error}`);
-      } else {
+      } else if (type !== "allGameStatus" && type !== "gameDetail") {
         toast.success(`${type}`);
       }
       console.log("WebSocket message", type, payload);

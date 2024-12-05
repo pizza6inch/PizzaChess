@@ -52,7 +52,7 @@ type GameDetail = {
   moves: Chess["history"];
   isEnd: Chess["isGameOver"];
   remainingTime: number;
-  gameState: string;
+  gameState: "waiting" | "in-progress" | "finished";
   isWhiteTurn: boolean;
 };
 
@@ -61,7 +61,7 @@ type GameInfo = {
   white: player | null;
   black: player | null;
   spectators: player[];
-  gameState: string;
+  gameState: "waiting" | "in-progress" | "finished";
 };
 
 type player = {
