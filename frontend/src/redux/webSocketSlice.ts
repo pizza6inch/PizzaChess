@@ -79,11 +79,11 @@ const webSocketSlice = createSlice({
       state,
       action: PayloadAction<leaveGameSuccessPayload>
     ) => {
-      const { gameId } = action.payload;
+      // const { gameId } = action.payload;
       state.currentGame = null;
     },
     makeMoveSuccess: (state, action: PayloadAction<makeMoveSuccessPayload>) => {
-      const { gameId } = action.payload;
+      // const { gameId } = action.payload;
     },
     setAllGameStatus: (state, action: PayloadAction<AllGameStatusPayload>) => {
       const { games } = action.payload;

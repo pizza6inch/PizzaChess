@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import { Chess, Square } from "chess.js";
 
 import Chessground from "@react-chess/chessground";
 import "chessground/assets/chessground.base.css";
 import "chessground/assets/chessground.brown.css";
 import "chessground/assets/chessground.cburnett.css";
-import { log } from "console";
 
 const ChessGame = () => {
   const [fen, setFen] = useState("start");
