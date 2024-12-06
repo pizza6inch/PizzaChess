@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { useEffect, useState, useRef } from "react";
-import { Chessground } from "chessground";
+
+import ChessGame from "@/components/ChessBoard";
 
 const GamePage = () => {
   // const { sendMessage } = useWebSocket();
@@ -28,25 +29,11 @@ const GamePage = () => {
   //   sendMessage("spectateGame", { playerToken, gameId });
   // }
 
-  const chessboardRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (chessboardRef.current) {
-      const cg = Chessground(chessboardRef.current, {
-        draggable: { showGhost: true },
-        drawable: { enabled: true },
-      });
-      cg.set({
-        fen: "start",
-      });
-    }
-  }, []);
-
   return (
     <div>
       <h1>Game Page: {1}</h1>
       <p>這是遊戲頁面，遊戲 ID 是 {1}。</p>
-      <div className=" w-[400px] h-[400px]" ref={chessboardRef} />
+      <ChessGame />
     </div>
   );
 };

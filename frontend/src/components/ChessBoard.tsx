@@ -1,60 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { Chess, Square } from "chess.js";
+
 import Chessground from "@react-chess/chessground";
-import { Chessground as ChessgroundType } from "@react-chess/chessground";
-import "@react-chess/chessground/dist/chessground.css"; // 引入樣式
+import "chessground/assets/chessground.base.css";
+import "chessground/assets/chessground.brown.css";
+import "chessground/assets/chessground.cburnett.css";
+import { log } from "console";
 
 const ChessGame = () => {
-  const [cg, setCg] = useState<ChessgroundType | null>(null);
+  const [fen, setFen] = useState("start");
+  const [chess, setChess] = useState(new Chess());
+  const [dests, setDests] = useState(new Map());
 
-  const [fen, setFen] = useState("start"); // 初始狀態
+  const [currentColor, setCurrentColor] = useState<
+    "white" | "black" | "both" | undefined
+  >("white");
 
-  useEffect(() => {
-    if (!cg) return;
+  const afterHandler = (orig: string, dest: string) => {
+    if (currentColor === "white") {
+      setCurrentColor("black");
+    } else {
+      setCurrentColor("white");
+    }
+    chess.move({ from: orig, to: dest });
+    console.log(currentColor, orig, dest);
+  };
 
-    cg.set({
-      fen: fen, // 設定當前棋盤的 FEN 狀態
+  // console.log(chess.moves());
+
+  const getDest = () => {
+    const dests = new Map();
+    chess.moves().forEach((move) => {
+      // console.log(move);
     });
-  }, [fen, cg]);
-
-  // 移動棋子
-  const handleMove = (from: string, to: string) => {
-    if (cg) {
-      cg.move(from, to); // 使用 move 來移動棋子
-      console.log(`Moved from ${from} to ${to}`);
-    }
   };
-
-  // 控制棋盤的設置
-  const controlPieces = () => {
-    if (cg) {
-      cg.set({
-        pieces: {
-          e2: "P", // 放置白兵在 e2
-          e4: "p", // 放置黑兵在 e4
-        },
-      });
-    }
-  };
+  // console.log(getDest());
 
   return (
-    <div>
-      <Chessground
-        ref={(el) => {
-          if (el) setCg(el);
-        }}
-        width={400}
-        height={400}
-        draggable={true}
-        dropOffBoard="trash"
-        sparePieces={true}
-        onMove={(from, to) => {
-          handleMove(from, to);
-        }}
-      />
+    <Chessground
+      config={{
+        fen: chess.fen(),
+        movable: {
+          free: false,
+          color: currentColor,
+          dests: dests,
+          // valid moves. {"a2" ["a3" "a4"] "b1" ["a3" "c3"]}
+          events: {
+            after: afterHandler,
+          },
+        },
+        events: {
+          // move: (from, to) => {
+          //   console.log(from, to);
+          // },
+          select: (key) => {
+            console.log(chess.moves({ square: key as Square, verbose: true }));
+            const moves = chess.moves({ square: key as Square, verbose: true });
+            const dest = moves.map((move) => move.to);
 
-      <button onClick={controlPieces}>控制棋子</button>
-      <button onClick={() => setFen("start")}>重置棋盤</button>
-    </div>
+            setDests(dests.set(key, dest));
+          },
+        },
+      }}
+    />
   );
 };
 
