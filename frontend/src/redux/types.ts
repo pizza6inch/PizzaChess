@@ -48,12 +48,13 @@ type GameDetail = {
   white: player | null;
   black: player | null;
   spectators: player[];
-  board: Chess["board"];
-  moves: Chess["history"];
-  isEnd: Chess["isGameOver"];
+  fen: string;
+  moves: string[];
+  isEnd: boolean;
   remainingTime: number;
   gameState: "waiting" | "in-progress" | "finished";
   isWhiteTurn: boolean;
+  winner: player | null;
 };
 
 type GameInfo = {

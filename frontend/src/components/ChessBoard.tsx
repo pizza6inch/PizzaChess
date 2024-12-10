@@ -1,19 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Chess, Square } from "chess.js";
+import { RootState } from "../redux/store";
 
 import Chessground from "@react-chess/chessground";
 import "chessground/assets/chessground.base.css";
 import "chessground/assets/chessground.brown.css";
 import "chessground/assets/chessground.cburnett.css";
 
+import { useSelector } from "react-redux";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
+
 const ChessGame = () => {
-  const [fen, setFen] = useState("start");
-  const [chess, setChess] = useState(new Chess());
-  const [dests, setDests] = useState(new Map());
+  const { sendMessage } = useWebSocket();
+
+  const { playerToken, gameOwnerToken, games, playerInfo, currentGame } =
+    useSelector((state: RootState) => state.websocket);
+  console.log(currentGame?.black);
+  console.log(currentGame?.white);
+
+  console.log(currentGame?.fen);
+
+  const [fen, setFen] = useState<string | undefined>(currentGame?.fen);
+  const [validDests, setValidDests] = useState(new Map());
 
   const [currentColor, setCurrentColor] = useState<
     "white" | "black" | "both" | undefined
   >("white");
+
+  useEffect(() => {
+    if (currentGame?.fen) {
+      setFen(fen);
+    }
+  }, [currentGame?.fen]);
 
   const afterHandler = (orig: string, dest: string) => {
     if (currentColor === "white") {
@@ -21,29 +39,35 @@ const ChessGame = () => {
     } else {
       setCurrentColor("white");
     }
-    chess.move({ from: orig, to: dest });
+    sendMessage("makeMove", {
+      playerToken,
+      gameId: currentGame?.gameId,
+      move: { from: orig, to: dest },
+    });
     console.log(currentColor, orig, dest);
+  };
+
+  const onSelect = (key: string) => {
+    console.log(fen);
+
+    const chess = new Chess(fen);
+    console.log(chess.moves({ square: key as Square, verbose: true }));
+    const moves = chess.moves({ square: key as Square, verbose: true });
+    const dest = moves.map((move) => move.to);
+
+    setValidDests(validDests.set(key, dest));
   };
 
   // console.log(chess.moves());
 
-  const getDest = () => {
-    const dests = new Map();
-    chess.moves().forEach((move) => {
-      // console.log(move);
-    });
-  };
-  // console.log(getDest());
-
   return (
     <Chessground
       config={{
-        fen: chess.fen(),
+        fen: fen,
         movable: {
           free: false,
           color: currentColor,
-          dests: dests,
-          // valid moves. {"a2" ["a3" "a4"] "b1" ["a3" "c3"]}
+          dests: validDests,
           events: {
             after: afterHandler,
           },
@@ -52,13 +76,7 @@ const ChessGame = () => {
           // move: (from, to) => {
           //   console.log(from, to);
           // },
-          select: (key) => {
-            console.log(chess.moves({ square: key as Square, verbose: true }));
-            const moves = chess.moves({ square: key as Square, verbose: true });
-            const dest = moves.map((move) => move.to);
-
-            setDests(dests.set(key, dest));
-          },
+          select: onSelect,
         },
       }}
     />

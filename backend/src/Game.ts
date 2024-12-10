@@ -149,7 +149,7 @@ export class Game {
       white: this.white?.getInfo(),
       black: this.black?.getInfo(),
       spectators: this.spectators.map((spectator) => spectator.getInfo()),
-      board: this.chess.board(),
+      fen: this.chess.fen(),
       moves: this.chess.history(),
       isEnd: this.chess.isGameOver(),
       remainingTime: this.remainingTime,
