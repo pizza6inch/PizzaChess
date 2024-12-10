@@ -28,9 +28,7 @@ export class Game {
 
   // 玩家加入遊戲
   public addPlayer(user: User, role: "white" | "black" | "spectator"): boolean {
-    if (this.gameState !== "waiting") {
-      throw new Error("無法加入遊戲！");
-    }
+
 
     if (role === "white" && !this.white) {
       this.white = user;
