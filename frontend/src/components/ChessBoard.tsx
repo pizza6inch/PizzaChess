@@ -1,3 +1,4 @@
+"use client"; 
 import React, { useState, useEffect } from "react";
 import { Chess, Square } from "chess.js";
 import { RootState } from "../redux/store";
@@ -15,43 +16,37 @@ const ChessGame = () => {
 
   const { playerToken, gameOwnerToken, games, playerInfo, currentGame } =
     useSelector((state: RootState) => state.websocket);
-  console.log(currentGame?.black);
-  console.log(currentGame?.white);
 
   console.log(currentGame?.fen);
 
-  const [fen, setFen] = useState<string | undefined>(currentGame?.fen);
   const [validDests, setValidDests] = useState(new Map());
 
-  const [currentColor, setCurrentColor] = useState<
-    "white" | "black" | "both" | undefined
-  >("white");
-
   useEffect(() => {
-    if (currentGame?.fen) {
-      setFen(fen);
-    }
-  }, [currentGame?.fen]);
+    console.log("currentGame", currentGame);
+    
+  }, [currentGame]);
 
   const afterHandler = (orig: string, dest: string) => {
-    if (currentColor === "white") {
-      setCurrentColor("black");
-    } else {
-      setCurrentColor("white");
-    }
+
     sendMessage("makeMove", {
       playerToken,
       gameId: currentGame?.gameId,
       move: { from: orig, to: dest },
     });
-    console.log(currentColor, orig, dest);
+
   };
 
   const onSelect = (key: string) => {
-    console.log(fen);
 
-    const chess = new Chess(fen);
-    console.log(chess.moves({ square: key as Square, verbose: true }));
+    if(currentGame?.isWhiteTurn === true && playerInfo?.id !== currentGame?.white?.id) {
+      setValidDests(new Map());
+      return;
+    }
+    if(currentGame?.isWhiteTurn === false && playerInfo?.id !== currentGame?.black?.id) {
+      setValidDests(new Map());
+      return;
+    }
+    const chess = new Chess(currentGame?.fen);
     const moves = chess.moves({ square: key as Square, verbose: true });
     const dest = moves.map((move) => move.to);
 
@@ -63,10 +58,11 @@ const ChessGame = () => {
   return (
     <Chessground
       config={{
-        fen: fen,
+        fen: currentGame?.fen,
+        orientation: currentGame?.black?.id === playerInfo?.id ? "black" : "white", // 觀察者 & 白棋是白方視角
         movable: {
           free: false,
-          color: currentColor,
+          // color: currentGame?.isWhiteTurn ? "white" : "black",
           dests: validDests,
           events: {
             after: afterHandler,

@@ -4,9 +4,6 @@ import "@/app/global.css";
 
 import ClientProviders from "@/contexts/ClientProviders";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // 必須導入樣式
-
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
 //   variable: "--font-geist-sans",
@@ -31,17 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="dark"
-        />
         <ClientProviders>{children}</ClientProviders>
+        {/* {children} */}
       </body>
     </html>
   );

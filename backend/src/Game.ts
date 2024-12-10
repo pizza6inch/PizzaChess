@@ -98,7 +98,9 @@ export class Game {
       }
     }
 
-    console.log(`${user.displayName} made move: ${move}`);
+    this.isWhiteTurn = !this.isWhiteTurn;
+
+    console.log(`${user.displayName} made move: ${move.from} -> ${move.to}`);
     return true;
   }
 
