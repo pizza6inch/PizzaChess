@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // 升級目標到 ES6，適合現代 Node.js 環境
+    "module": "commonjs", // Node.js 默認的模組系統
+    "outDir": "./dist", // 指定編譯輸出目錄
+    "rootDir": "./src", // 指定源代碼目錄
+    "strict": true, // 啟用嚴格模式
+    "esModuleInterop": true, // 支持 ES6 模組互操作性
+    "forceConsistentCasingInFileNames": true, // 文件名大小寫檢查
+    "skipLibCheck": true, // 跳過類型檢查以加快編譯速度
+    "sourceMap": true, // 生成 source map 方便調試
+    "removeComments": true // 移除註解以縮小編譯輸出大小
+  },
+  "include": ["src/**/*"], // 包含的源文件
+  "exclude": ["node_modules", "dist"] // 排除的目錄
+}
