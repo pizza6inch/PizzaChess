@@ -1,6 +1,5 @@
 "use client";
 
-import { env } from "process";
 import { WebSocketProvider } from "./WebSocketProvider";
 import { store } from "@/redux/store";
 import { Provider } from "react-redux";
@@ -25,7 +24,11 @@ export default function ClientProviders({
         theme="dark"
       />
       <Provider store={store}>
-        <WebSocketProvider url={env.WS_SERVER_IP}>{children}</WebSocketProvider>
+        <WebSocketProvider
+          url={process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8080"}
+        >
+          {children}
+        </WebSocketProvider>
       </Provider>
     </>
   );
