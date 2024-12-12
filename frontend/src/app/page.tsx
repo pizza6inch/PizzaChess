@@ -4,26 +4,21 @@ import "@/app/global.css";
 import { saveUser } from "@/app/actions/saveUser";
 
 export default function Home() {
-  const handleSaveUser = async (formData: FormData) => {
+  const handleSaveUser = async () => {
     "use server";
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
+    const name = "John Doe";
+    const email = "test@gmail.com";
+
+    console.log("Saving user:", { name, email });
 
     const result = await saveUser({ name, email });
     console.log(result);
   };
 
   return (
-    <form action={handleSaveUser}>
-      <label>
-        Name:
-        <input type="text" name="name" required />
-      </label>
-      <label>
-        Email:
-        <input type="email" name="email" required />
-      </label>
-      <button type="submit">Save User</button>
-    </form>
+    <div>
+      <h1>Save User</h1>
+      <button onClick={handleSaveUser}>Click me</button>
+    </div>
   );
 }

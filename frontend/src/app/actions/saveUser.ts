@@ -6,8 +6,8 @@ import clientPromise from "@/lib/mongodb";
 export async function saveUser(data: { name: string; email: string }) {
   try {
     const client = await clientPromise;
-    const db = client.db("myDatabase"); // 替換為你的資料庫名稱
-    const collection = db.collection("users");
+    const db = client.db("pizzaChess"); // 替換為你的資料庫名稱
+    const collection = db.collection("test");
 
     const result = await collection.insertOne({
       name: data.name,
