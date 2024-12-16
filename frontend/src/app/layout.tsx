@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import "@/app/global.css";
+import { Abril_Fatface, Open_Sans } from "next/font/google";
 
 import ClientProviders from "@/contexts/ClientProviders";
-
+import Header from "@/components/Header";
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
 //   variable: "--font-geist-sans",
@@ -14,6 +15,16 @@ import ClientProviders from "@/contexts/ClientProviders";
 //   variable: "--font-geist-mono",
 //   weight: "100 900",
 // });
+
+const abrilFatface = Abril_Fatface({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const OpenSans = Open_Sans({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,7 +38,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={OpenSans.className}>
+        <Header />
         <ClientProviders>{children}</ClientProviders>
         {/* {children} */}
       </body>
