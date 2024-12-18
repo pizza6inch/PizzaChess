@@ -5,6 +5,10 @@ import clientPromise from '@/lib/mongodb'
 import jsonwebtoken from 'jsonwebtoken'
 import { SigninSchema, LoginSchema, updatePasswordSchema, createPasswordHash, verifyPassword } from '@/lib/schema'
 
+const dbName = 'pizzaChess'
+const collectionName = 'test'
+const TOKEN_SECRET = process.env.TOKEN_SECRET
+
 export async function signup(data: { userName: string; password: string; displayName: string }) {
   try {
     const client = await clientPromise
@@ -137,11 +141,11 @@ export async function getInfo(token: string) {
 }
 
 const tokenEncode = (userName: string) => {
-  if (!process.env.TOKEN_SECRET) {
+  if (!TOKEN_SECRET) {
     throw new Error('TOKEN_SECRET is not defined')
   }
 
-  return jsonwebtoken.sign({ data: userName }, process.env.TOKEN_SECRET, {
+  return jsonwebtoken.sign({ data: userName }, TOKEN_SECRET, {
     expiresIn: '24h',
   })
 }

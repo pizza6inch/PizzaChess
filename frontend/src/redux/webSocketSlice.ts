@@ -41,7 +41,7 @@ const initialState: InitialState = {
 
 // 建立 WebSocket Slice
 const webSocketSlice = createSlice({
-  name: 'websocket',
+  name: 'WebSocket',
   initialState,
   reducers: {
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {

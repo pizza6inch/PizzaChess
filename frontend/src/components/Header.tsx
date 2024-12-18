@@ -1,13 +1,36 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
-
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../redux/store'
-import { signup, login, updatePassword } from '@/app/serverActions/user'
+import { signup, login, updatePassword, getInfo } from '@/app/serverActions/user'
+
+import { setUser } from '@/redux/authSlice'
+
+import SignInModal from '@/components/SignInModal'
+import SignUpModal from '@/components/SignUpModal'
 
 const Header = () => {
-  const { playerToken, gameOwnerToken, games, playerInfo, currentGame } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
+
+  const dispatch = useDispatch()
+
+  const [showSignInModal, setShowSignInModal] = useState(false)
+  const [showSignUpModal, setShowSignUpModal] = useState(false)
+
+  useEffect(() => {
+    const authUser = async () => {
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
+        const response = await getInfo(accessToken)
+        console.log(response)
+        // dispatch(setUser(response.user))
+      }
+    }
+
+    authUser()
+  }, [dispatch])
 
   const navItems = [
     {
@@ -87,7 +110,19 @@ const Header = () => {
           ))}
         </ul>
       </nav>
-      <button>SIGN UP</button>
+      {user && <div>user.displayName</div>}
+      {!user && (
+        <button
+          onClick={() => {
+            setShowSignInModal(true)
+          }}
+        >
+          SIGN IN
+        </button>
+      )}
+
+      {showSignInModal && <SignInModal />}
+      {showSignUpModal && <SignUpModal />}
     </header>
   )
 }
