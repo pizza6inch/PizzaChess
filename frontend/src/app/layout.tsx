@@ -4,22 +4,8 @@ import "@/app/global.css";
 import { Abril_Fatface, Open_Sans } from "next/font/google";
 
 import ClientProviders from "@/contexts/ClientProviders";
+import { ToastContainer } from "react-toastify";
 import Header from "@/components/Header";
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
-
-const abrilFatface = Abril_Fatface({
-  weight: "400",
-  subsets: ["latin"],
-});
 
 const OpenSans = Open_Sans({
   weight: "400",
@@ -39,9 +25,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={OpenSans.className}>
-        <Header />
-        <ClientProviders>{children}</ClientProviders>
-        {/* {children} */}
+        <ClientProviders>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="dark"
+          />
+          <Header />
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );

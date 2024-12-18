@@ -4,62 +4,12 @@ import React, { useState } from "react";
 import "@/app/global.css";
 import Link from "next/link";
 
-import { signup, login, updatePassword } from "@/app/actions/user";
+import { signup, login, updatePassword } from "@/app/serverActions/user";
 
 import ChessModel from "@/components/ChessModel";
 
 export default function Home() {
   const [type, setType] = useState<string>("pawn");
-  const handleSaveUser = async () => {
-    const userName = "John Doe";
-    const password = "test123";
-    const displayName = "John";
-
-    console.log("Signup:", { userName, password, displayName });
-
-    const response = await signup({ userName, password, displayName });
-
-    if (response.success && response.token) {
-      localStorage.setItem("accessToken", response.token);
-      console.log("Signup success:", response.token);
-    } else {
-      console.log("Signup failed:", response.error);
-    }
-  };
-
-  const handleLogin = async () => {
-    const userName = "John Doe";
-    const password = "test123";
-
-    console.log("Login:", { userName, password });
-    const response = await login({ userName, password });
-
-    if (response.success && response.token) {
-      localStorage.setItem("accessToken", response.token);
-      console.log("Login success:", response.token);
-    } else {
-      console.log("Login failed:", response.error);
-    }
-  };
-
-  const handleUpdatePassword = async () => {
-    const oldPassword = "test123";
-    const newPassword = "newPassword123";
-
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("No token found");
-    }
-
-    console.log("Update Password:", { oldPassword, newPassword });
-    const result = await updatePassword({ oldPassword, newPassword }, token);
-    if (result.success) {
-      console.log("Update Password success");
-    } else {
-      console.log("Update Password failed:", result.error);
-    }
-  };
 
   return (
     <>
@@ -69,8 +19,7 @@ export default function Home() {
           <h2 className=" font-semibold text-xl">Wanna Play ?</h2>
           <h1 className=" font-semibold text-6xl">CHESS</h1>
           <p className=" leading-loose text-xl">
-            Mastering the art of strategy and precision, where every move counts
-            and every decision shapes the game.
+            Mastering the art of strategy and precision, where every move counts and every decision shapes the game.
           </p>
           <button className=" bg-white text-black px-5 py-2 rounded-xl">
             <Link href="/room">PLAY NOW</Link>
