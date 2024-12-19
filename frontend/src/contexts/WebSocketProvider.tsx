@@ -11,7 +11,7 @@ import {
   setAllGameStatus,
   setGameDetail,
   leaveGameSuccess,
-} from '../redux/webSocketSlice'
+} from '@/redux/slices/webSocketSlice'
 
 // 定義 Context 類型
 interface WebSocketContextType {
