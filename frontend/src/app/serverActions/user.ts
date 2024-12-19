@@ -9,37 +9,40 @@ const dbName = 'pizzaChess'
 const collectionName = 'test'
 const TOKEN_SECRET = process.env.TOKEN_SECRET
 
-export async function signup(data: { userName: string; password: string; displayName: string }) {
+export async function signup(data: { username: string; password: string; displayName: string }) {
   try {
+    // zod schema validation
+    const validation: { success: boolean; data: any } = LoginSchema.safeParse(data)
+    if (!validation.success) {
+      return { success: false, error: 'Invalid Input Data' }
+    }
+
     const client = await clientPromise
     const db = client.db('pizzaChess') // 替換為你的資料庫名稱
     const collection = db.collection('test')
 
-    // zod schema validation
-    let parsedData = SigninSchema.parse(data)
-
-    const user = await collection.findOne({ userName: parsedData.userName })
+    const user = await collection.findOne({ username: data.username })
 
     if (user) {
       return {
         success: false,
-        error: 'User already exists, please change userName',
+        error: 'User already exists, please change username',
       }
     }
 
     // create password hash
-    const { passwordHash, salt } = createPasswordHash(parsedData.password)
+    const { passwordHash, salt } = createPasswordHash(data.password)
 
     const result = await collection.insertOne({
-      userName: parsedData.userName,
+      username: data.username,
       password: passwordHash,
-      displayName: parsedData.displayName,
+      displayName: data.displayName,
       rating: 1200,
       createdAt: new Date(),
       salt,
     })
 
-    const token = tokenEncode(parsedData.userName)
+    const token = tokenEncode(data.username)
 
     return { success: true, token }
   } catch (error) {
@@ -48,26 +51,29 @@ export async function signup(data: { userName: string; password: string; display
   }
 }
 
-export async function login(data: { userName: string; password: string }) {
+export async function login(data: { username: string; password: string }) {
   try {
+    // zod schema validation
+    const validation: { success: boolean; data: any } = LoginSchema.safeParse(data)
+    if (!validation.success) {
+      return { success: false, error: 'Invalid Input Data' }
+    }
+
     const client = await clientPromise
     const db = client.db('pizzaChess') // 替換為你的資料庫名稱
     const collection = db.collection('test')
 
-    // zod schema validation
-    const parsedData = LoginSchema.parse(data)
-
-    const user = await collection.findOne({ userName: parsedData.userName })
+    const user = await collection.findOne({ username: data.username })
 
     if (!user) {
       return { success: false, error: 'User not found' }
     }
 
-    if (!verifyPassword(parsedData.password, user.password, user.salt)) {
+    if (!verifyPassword(data.password, user.password, user.salt)) {
       return { success: false, error: 'Password is incorrect' }
     }
 
-    const token = tokenEncode(parsedData.userName)
+    const token = tokenEncode(data.username)
 
     return { success: true, token }
   } catch (error) {
@@ -78,12 +84,15 @@ export async function login(data: { userName: string; password: string }) {
 
 export async function updatePassword(data: { oldPassword: string; newPassword: string }, token: string) {
   try {
+    // zod schema validation
+    const parsedData = LoginSchema.safeParse(data)
+    if (!parsedData.success) {
+      return { success: false, error: 'Invalid Input Data' }
+    }
+
     const client = await clientPromise
     const db = client.db('pizzaChess') // 替換為你的資料庫名稱
     const collection = db.collection('test')
-
-    // zod schema validation
-    const parsedData = updatePasswordSchema.parse(data)
 
     const decodeData = tokenDecode(token)
 
@@ -91,7 +100,7 @@ export async function updatePassword(data: { oldPassword: string; newPassword: s
       return { success: false, error: 'system error' }
     }
 
-    const user = await collection.findOne({ userName: decodeData.data })
+    const user = await collection.findOne({ username: decodeData.data })
 
     if (!user) {
       return { success: false, error: 'User not found' }
@@ -103,10 +112,7 @@ export async function updatePassword(data: { oldPassword: string; newPassword: s
 
     const { passwordHash, salt } = createPasswordHash(parsedData.newPassword)
 
-    console.log('newPasswordHash', passwordHash)
-    console.log('old', user.password)
-
-    await collection.updateOne({ userName: decodeData.data }, { $set: { password: passwordHash, salt } })
+    await collection.updateOne({ username: decodeData.data }, { $set: { password: passwordHash, salt } })
 
     return { success: true }
   } catch (error) {
@@ -127,25 +133,32 @@ export async function getInfo(token: string) {
       return { success: false, error: 'system error' }
     }
 
-    const user = await collection.findOne({ userName: decodeData.data })
+    const user = await collection.findOne({ username: decodeData.data })
 
     if (!user) {
       return { success: false, error: 'User not found' }
     }
 
-    return { success: true, user }
+    return {
+      success: true,
+      user: {
+        username: user.username,
+        displayName: user.displayName,
+        rating: user.rating,
+      },
+    }
   } catch (error) {
     console.error('Error getting user info:', error)
     return { success: false, error: 'Failed to get user info' }
   }
 }
 
-const tokenEncode = (userName: string) => {
+const tokenEncode = (username: string) => {
   if (!TOKEN_SECRET) {
     throw new Error('TOKEN_SECRET is not defined')
   }
 
-  return jsonwebtoken.sign({ data: userName }, TOKEN_SECRET, {
+  return jsonwebtoken.sign({ data: username }, TOKEN_SECRET, {
     expiresIn: '24h',
   })
 }

@@ -13,7 +13,7 @@ import {
   GameInfo,
   GameDetail,
   player,
-} from './types'
+} from '../types/webSocket'
 
 // 定義 Redux 狀態的型別
 type InitialState = {

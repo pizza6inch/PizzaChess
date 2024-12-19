@@ -9,18 +9,25 @@ import { Input } from './ui/input'
 import { useDispatch } from 'react-redux'
 import { setShowSignInModal, setShowSignUpModal } from '@/redux/slices/modalSlice'
 import { setUser } from '@/redux/slices/authSlice'
-import { login, getInfo } from '@/app/serverActions/user'
 
+import { signup, getInfo } from '@/app/serverActions/user'
 import { toast } from 'react-toastify'
 
-const schema = z.object({
-  username: z.string().min(3, { message: 'at least 3 characters' }),
-  password: z.string().min(6, { message: 'at least 6 characters' }),
-})
+const schema = z
+  .object({
+    username: z.string().min(3, { message: 'at least 3 characters' }),
+    displayName: z.string().min(3, { message: 'at least 3 characters' }),
+    password: z.string().min(6, { message: 'at least 6 characters' }),
+    confirmPassword: z.string().min(6, { message: 'at least 6 characters' }),
+  })
+  .refine(data => data.confirmPassword === data.password, {
+    message: 'passwords do not match',
+    path: ['confirmPassword'],
+  })
 
 type FormData = z.infer<typeof schema>
 
-const SignInModal = () => {
+const SignUpModal = () => {
   const dispatch = useDispatch()
 
   const {
@@ -32,31 +39,32 @@ const SignInModal = () => {
   })
 
   const onSubmit = async (data: FormData) => {
-    // here to sign in
-    const { username, password } = data
-    const response = await login({ username, password })
+    // here to sign up
+    const { username, displayName, password } = data
+    const response = await signup({ username, displayName, password })
+    console.log(response)
 
     if (response.success && response.token) {
-      toast.success('Login success')
+      toast.success('Sign up success')
       localStorage.setItem('accessToken', response.token)
-      dispatch(setShowSignInModal(false))
+      dispatch(setShowSignUpModal(false))
 
       const infoResponse = await getInfo(response.token)
       if (infoResponse.success && infoResponse.user) {
         dispatch(setUser(infoResponse.user))
       }
     } else {
-      toast.error('Login failed')
+      toast.error('Sign up failed')
     }
   }
 
   const onBackgroundClick = () => {
-    dispatch(setShowSignInModal(false))
+    dispatch(setShowSignUpModal(false))
   }
 
-  const switchToSignUp = () => {
-    dispatch(setShowSignInModal(false))
-    dispatch(setShowSignUpModal(true))
+  const switchToSignIn = () => {
+    dispatch(setShowSignUpModal(false))
+    dispatch(setShowSignInModal(true))
   }
 
   return (
@@ -73,15 +81,30 @@ const SignInModal = () => {
           </div>
 
           <div>
+            <Input {...register('displayName')} placeholder="displayName" className=" h-[50px] mb-2" />
+            {errors.displayName && <p className=" text-red-600">{errors.displayName.message}</p>}
+          </div>
+
+          <div>
             <Input type="password" {...register('password')} placeholder="password" className=" h-[50px] mb-2" />
             {errors.password && <p className=" text-red-600">{errors.password.message}</p>}
           </div>
 
+          <div>
+            <Input
+              type="password"
+              {...register('confirmPassword')}
+              placeholder="confirmPassword"
+              className=" h-[50px] mb-2"
+            />
+            {errors.confirmPassword && <p className=" text-red-600">{errors.confirmPassword.message}</p>}
+          </div>
+
           <button type="submit" className=" bg-red-700 p-2 text-lg rounded-md font-bold">
-            SIGN IN
-          </button>
-          <button type="button" className=" text-red-700 text-lg font-bold" onClick={switchToSignUp}>
             SIGN UP
+          </button>
+          <button type="button" className=" text-red-700 text-lg font-bold" onClick={switchToSignIn}>
+            SIGN IN
           </button>
         </form>
       </div>
@@ -89,4 +112,4 @@ const SignInModal = () => {
   )
 }
 
-export default SignInModal
+export default SignUpModal

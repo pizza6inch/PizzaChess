@@ -1,15 +1,26 @@
 'use client'
 
 import { store } from '@/redux/store'
-import { Provider } from 'react-redux'
+import { Provider, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import SignInModal from '@/components/SignInModal'
+import SignUpModal from '@/components/SignUpModal'
 
-import 'react-toastify/dist/ReactToastify.css'
+const Modal = () => {
+  const { showSignInModal, showSignUpModal } = useSelector((state: RootState) => state.modal)
+  return (
+    <>
+      {showSignInModal && <SignInModal />}
+      {showSignUpModal && <SignUpModal />}
+    </>
+  )
+}
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Provider store={store}>
-        {/* <WebSocketProvider url={process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8080"}>{children}</WebSocketProvider> */}
+        <Modal />
         {children}
       </Provider>
     </>

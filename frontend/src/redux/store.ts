@@ -1,13 +1,15 @@
 // store.ts
 import { configureStore } from '@reduxjs/toolkit'
-import webSocketSlice from './webSocketSlice'
-import authSlice from './authSlice'
+import webSocketSlice from './slices/webSocketSlice'
+import authSlice from './slices/authSlice'
+import modalSlice from './slices/modalSlice'
 
 // 配置 Redux Store
 export const store = configureStore({
   reducer: {
     websocket: webSocketSlice.reducer,
     auth: authSlice.reducer,
+    modal: modalSlice.reducer,
   },
 })
 

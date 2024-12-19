@@ -3,13 +3,13 @@ import exp from 'constants'
 import crypto from 'crypto'
 
 export const SigninSchema = z.object({
-  userName: z.string().min(1, 'name is required').max(15, 'max length is 15'),
+  username: z.string().min(1, 'name is required').max(15, 'max length is 15'),
   password: z.string().min(6, 'password must be at least 6 characters'),
   displayName: z.string().min(1, 'displayName is required').max(15, 'max length is 15'),
 })
 
 export const LoginSchema = z.object({
-  userName: z.string().min(1, 'name is required').max(15, 'max length is 15'),
+  username: z.string().min(1, 'name is required').max(15, 'max length is 15'),
   password: z.string().min(6, 'password must be at least 6 characters'),
 })
 
