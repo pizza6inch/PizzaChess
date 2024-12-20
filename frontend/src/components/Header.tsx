@@ -20,19 +20,41 @@ const Header = () => {
 
   const headerRef = useRef<HTMLHeadElement>(null)
   const [showSideBar, setShowSideBar] = useState(false)
+  const [showAccountPopover, setShowAccountPopover] = useState(false)
 
   const navItems = [
     {
-      title: 'rules',
-      url: '/rules',
-    },
-    {
-      title: 'about',
-      url: '/about',
+      title: 'home',
+      url: '/',
+      icon: 'home',
     },
     {
       title: 'play',
       url: '/room',
+      icon: 'chess_pawn',
+    },
+    {
+      title: 'rules',
+      url: '/rules',
+      icon: 'rule',
+    },
+    {
+      title: 'about',
+      url: '/about',
+      icon: 'group',
+    },
+  ]
+
+  const accountItems = [
+    {
+      title: 'settings',
+      url: '/settings',
+      icon: 'settings',
+    },
+    {
+      title: 'logout',
+      url: '/logout',
+      icon: 'logout',
     },
   ]
 
@@ -85,19 +107,54 @@ const Header = () => {
           <ul className="flex w-full gap-24 items-center ">
             <TitleIcon />
             {navItems.map((item, index) => (
-              <li key={index}>
+              <li
+                key={index}
+                className=" transition-all duration-300 p-2 border-b-2 border-transparent hover:border-white"
+              >
                 <Link href={item.url}>{item.title.toUpperCase()}</Link>
               </li>
             ))}
           </ul>
         </nav>
         <div className="lg:hidden flex items-center">
-          <span className="material-symbols-outlined mr-4" onClick={() => setShowSideBar(true)}>
+          <span className="material-symbols-outlined mr-4 hover:cursor-pointer" onClick={() => setShowSideBar(true)}>
             menu
           </span>
           <TitleIcon />
         </div>
-        {user && <div>{user.displayName}</div>}
+        {user && (
+          <div className="relative flex p-2">
+            <span
+              className="material-symbols-outlined scale-[200%] hover:cursor-pointer"
+              onClick={() => setShowAccountPopover(!showAccountPopover)}
+            >
+              account_circle
+            </span>
+            {showAccountPopover && (
+              <div className=" absolute top-[110%] right-0 flex flex-col p-4 gap-4 bg-black rounded-lg text-white w-[200px] z-10 transition-opacity duration-300 animate-fade-in">
+                <div className=" flex flex-row  items-center">
+                  <span className="material-symbols-outlined scale-150 mr-4">account_circle</span>
+                  <p>{user.displayName}</p>
+                </div>
+                <p>{`@${user.username}`}</p>
+                <p>{`ratings：${user.rating}`}</p>
+                <div className="w-full h-[2px] bg-white" />
+                <div className="flex flex-col gap-4">
+                  {accountItems.map((item, index) => (
+                    <Link
+                      href={item.url}
+                      key={index}
+                      className="flex gap-4 items-center hover:bg-red-600 rounded-lg p-2"
+                    >
+                      <span className="material-symbols-outlined">{item.icon}</span>
+                      <p className=" font-light">{item.title.toUpperCase()}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         {!user && <button onClick={handleSignIn}>SIGN IN</button>}
       </header>
       {showSideBar && (
@@ -108,7 +165,23 @@ const Header = () => {
               setShowSideBar(false)
             }}
           />
-          <header className="fixed top-0 left-0 h-[100vh] w-[200px] bg-black z-30">hi</header>
+          <header className="fixed top-0 left-0 h-[100vh] w-[300px] bg-black z-30 text-white p-6 transition-all duration-200 animate-slide-in">
+            <TitleIcon />
+            <h2 className="text-2xl font-bold mt-8">Menu</h2>
+            <ul className="mt-6 flex flex-col gap-6">
+              {navItems.map((item, index) => (
+                <li key={index}>
+                  <Link
+                    href={item.url}
+                    className="flex gap-4 justify-between items-center transition-all duration-300 bg-transparent hover:bg-red-600 rounded-lg p-4"
+                  >
+                    <span className="material-symbols-outlined">{item.icon}</span>
+                    <p className="font-semibold">{item.title.toUpperCase()}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </header>
         </>
       )}
     </>
