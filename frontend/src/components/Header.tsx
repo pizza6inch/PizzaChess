@@ -117,7 +117,7 @@ const Header = () => {
           </ul>
         </nav>
         <div className="lg:hidden flex items-center">
-          <span className="material-symbols-outlined mr-4 hover:cursor-pointer" onClick={() => setShowSideBar(true)}>
+          <span className="material-symbols-outlined mr-8 hover:cursor-pointer" onClick={() => setShowSideBar(true)}>
             menu
           </span>
           <TitleIcon />
@@ -128,7 +128,7 @@ const Header = () => {
               className="material-symbols-outlined scale-[200%] hover:cursor-pointer"
               onClick={() => setShowAccountPopover(!showAccountPopover)}
             >
-              account_circle
+              {showAccountPopover ? 'close' : 'account_circle'}
             </span>
             {showAccountPopover && (
               <div className=" absolute top-[110%] right-0 flex flex-col p-4 gap-4 bg-black rounded-lg text-white w-[200px] z-10 transition-opacity duration-300 animate-fade-in">
