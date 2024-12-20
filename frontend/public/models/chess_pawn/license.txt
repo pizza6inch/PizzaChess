@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chess Pawn
+* source:	https://sketchfab.com/3d-models/chess-pawn-2b61573abd0a4599999e1ca0dffc4785
+* author:	sylvernaut (https://sketchfab.com/sylvernaut)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chess Pawn" (https://sketchfab.com/3d-models/chess-pawn-2b61573abd0a4599999e1ca0dffc4785) by sylvernaut (https://sketchfab.com/sylvernaut) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

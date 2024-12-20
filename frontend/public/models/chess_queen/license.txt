@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chess Piece Queen
+* source:	https://sketchfab.com/3d-models/chess-piece-queen-e1bd054f088e4c928740c4989a4a3a41
+* author:	Amine Hosseini (https://sketchfab.com/suburbandigital)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chess Piece Queen" (https://sketchfab.com/3d-models/chess-piece-queen-e1bd054f088e4c928740c4989a4a3a41) by Amine Hosseini (https://sketchfab.com/suburbandigital) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
