@@ -31,7 +31,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className=" w-full bg-black flex flex-col gap-[150px] py-10 overflow-hidden">
+      <section className=" w-full bg-black flex flex-col gap-[150px] py-[200px] overflow-hidden">
         <motion.div
           initial={{ opacity: 0, x: 200 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -99,6 +99,14 @@ export default function Home() {
             <span className="material-symbols-outlined scale-[300%] ">mood</span>
           </div>
         </motion.div>
+      </section>
+      <section className=" w-full h-[400px] bg-white text-black flex justify-center items-center px-4">
+        <p className=" text-3xl text-center font-bold">Come and join us for an exciting showdown！！</p>
+      </section>
+      <section className=" h-[1000px] bg-black text-white flex flex-col justify-center items-center px-4 relative">
+        <h2 className=" text-3xl font-bold mb-10">COMPANY</h2>
+        <p className=" text-xl">we are super NutNut people</p>
+        <img src="/logo.svg" className=" absolute bottom-10 right-10" />
       </section>
     </>
   )

@@ -25,7 +25,7 @@ const Footer = () => {
     },
   ]
   return (
-    <footer className="bg-[#ECECEC] text-black items-center flex lg:flex-row flex-col gap-4 justify-between px-4 py-10 mt-40">
+    <footer className="bg-[#ECECEC] text-black items-center flex lg:flex-row flex-col gap-4 justify-between px-4 py-10 ">
       <h2>Terms & Conditions | Privacy Policy</h2>
       <div className="flex gap-10">
         {icons.map((icon, index) => (
