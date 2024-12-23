@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../redux/store'
-import { signup, login, updatePassword, getInfo } from '@/app/serverActions/user'
+import { signup, login, updatePassword, getInfo } from '@/serverActions/user'
 import { setShowSignInModal, setShowSignUpModal } from '@/redux/slices/modalSlice'
 
 import { setUser } from '@/redux/slices/authSlice'
@@ -85,7 +85,7 @@ const Header = () => {
         if (response.success && response.user) {
           dispatch(setUser(response.user))
         } else {
-          console.error('Failed to get user info:')
+          // console.error('Failed to get user info:')
         }
       }
     }

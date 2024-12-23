@@ -9,7 +9,7 @@ import { Input } from './ui/input'
 import { useDispatch } from 'react-redux'
 import { setShowSignInModal, setShowSignUpModal } from '@/redux/slices/modalSlice'
 import { setUser } from '@/redux/slices/authSlice'
-import { login, getInfo } from '@/app/serverActions/user'
+import { login, getInfo } from '@/serverActions/user'
 
 import { toast } from 'react-toastify'
 
@@ -46,7 +46,7 @@ const SignInModal = () => {
         dispatch(setUser(infoResponse.user))
       }
     } else {
-      toast.error('Login failed')
+      toast.error(`Login failed:${response.error}`)
     }
   }
 

@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import '@/app/global.css'
 import Link from 'next/link'
 
-import { signup, login, updatePassword } from '@/app/serverActions/user'
+import { signup, login, updatePassword } from '@/serverActions/user'
 
 import ChessModel from '@/components/ChessModel'
 

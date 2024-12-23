@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 export const OpenSans = Open_Sans({
   weight: '400',
@@ -54,6 +55,7 @@ export default function RootLayout({
           />
           <Header />
           {children}
+          <Footer />
         </ClientProviders>
       </body>
     </html>

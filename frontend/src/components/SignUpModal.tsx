@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux'
 import { setShowSignInModal, setShowSignUpModal } from '@/redux/slices/modalSlice'
 import { setUser } from '@/redux/slices/authSlice'
 
-import { signup, getInfo } from '@/app/serverActions/user'
+import { signup, getInfo } from '@/serverActions/user'
 import { toast } from 'react-toastify'
 
 const schema = z
@@ -42,7 +42,6 @@ const SignUpModal = () => {
     // here to sign up
     const { username, displayName, password } = data
     const response = await signup({ username, displayName, password })
-    console.log(response)
 
     if (response.success && response.token) {
       toast.success('Sign up success')
@@ -54,7 +53,7 @@ const SignUpModal = () => {
         dispatch(setUser(infoResponse.user))
       }
     } else {
-      toast.error('Sign up failed')
+      toast.error(`Sign up failed:${response.error}`)
     }
   }
 
