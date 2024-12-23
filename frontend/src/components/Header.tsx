@@ -178,6 +178,7 @@ const Header = () => {
                     <span className="material-symbols-outlined">{item.icon}</span>
                     <p className="font-semibold">{item.title.toUpperCase()}</p>
                   </Link>
+                  <div className="w-full h-1 bg-white rounded-lg" />
                 </li>
               ))}
             </ul>

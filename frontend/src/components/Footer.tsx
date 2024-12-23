@@ -25,12 +25,12 @@ const Footer = () => {
     },
   ]
   return (
-    <footer className="bg-[#ECECEC] text-black items-center h-[100px] flex justify-between p-4 mt-40">
+    <footer className="bg-[#ECECEC] text-black items-center flex lg:flex-row flex-col gap-4 justify-between px-4 py-10 mt-40">
       <h2>Terms & Conditions | Privacy Policy</h2>
       <div className="flex gap-10">
         {icons.map((icon, index) => (
           <Link href={icon.link} key={index}>
-            <Image src={icon.src} alt={icon.alt} width={30} height={30} />
+            <img src={icon.src} alt={icon.alt} className="hover:scale-110 w-[30px] h-[30px]" />
           </Link>
         ))}
       </div>
