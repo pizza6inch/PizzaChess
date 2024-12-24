@@ -49,7 +49,7 @@ const Header = () => {
     {
       title: 'settings',
       url: '/settings',
-      icon: 'settings',
+      icon: 'manage_accounts',
     },
     {
       title: 'logout',
@@ -141,7 +141,7 @@ const Header = () => {
                   <span className="material-symbols-outlined scale-150 mr-4">account_circle</span>
                   <p>{user.displayName}</p>
                 </div>
-                <p>{`@${user.username}`}</p>
+                <p>{`@ ${user.username}`}</p>
                 <p>{`ratings：${user.rating}`}</p>
                 <div className="w-full h-[2px] bg-white" />
                 <div className="flex flex-col gap-4">
