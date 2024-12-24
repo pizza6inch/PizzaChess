@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation'
 
 import RoomCard from '@/components/RoomCard'
 
+import { GameInfo } from '@/redux/types/webSocket'
+
 export default function Room() {
   const { sendMessage } = useWebSocket()
 
@@ -23,7 +25,7 @@ export default function Room() {
 
   const categories = [{ status: 'All games' }, { status: 'In-game' }, { status: 'Waiting' }]
 
-  const testGames = [
+  const testGames: GameInfo[] = [
     {
       'gameId': '0',
       'white': null,
@@ -44,6 +46,7 @@ export default function Room() {
         },
       ],
       'gameState': 'waiting',
+      // gameState: 'waiting' | 'in-progress' | 'finished'
     },
     {
       'gameId': '0',
