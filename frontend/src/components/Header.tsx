@@ -65,8 +65,13 @@ const Header = () => {
       if (header) {
         if (window.scrollY > 0) {
           header.style.backgroundColor = 'black'
+          header.style.borderBottom = '2px solid white'
+          header.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)'
+          header.style.transition = 'all 0.5s'
         } else {
           header.style.backgroundColor = 'transparent'
+          header.style.boxShadow = 'none'
+          header.style.borderBottom = 'none'
         }
       }
     }
