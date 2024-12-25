@@ -144,6 +144,11 @@ export default function Room() {
   ]
 
   useEffect(() => {
+    if (!wsConnected) return
+    if (currentGame) router.push(`/game/${currentGame.gameId}`)
+  }, [wsConnected, currentGame, router])
+
+  useEffect(() => {
     const handleRegister = (displayName: string, rating: number) => {
       const payload = {
         displayName: displayName,
@@ -170,7 +175,7 @@ export default function Room() {
       } else {
         // generate random string as display name
         const randomName = Math.random().toString(36).substring(2, 6)
-        handleRegister(randomName, 1200)
+        handleRegister(`${randomName}_guest`, 1200)
       }
     }
 
@@ -179,9 +184,14 @@ export default function Room() {
     }
   }, [wsConnected, user])
 
-  // useEffect(() => {
-  //   console.log('playerInfo', playerInfo)
-  // }, [playerInfo, user])
+  const handleCreateGame = () => {
+    const payload = {
+      playerToken: sessionStorage.getItem('playerToken'),
+      playWhite: true,
+      timeLimit: 600,
+    }
+    sendMessage('createGame', payload)
+  }
 
   return (
     <>
@@ -190,41 +200,49 @@ export default function Room() {
           <h1 className=" font-bold text-3xl">Room List</h1>
           <p className="font-semibold text-2xl">{`${games.length} Games`}</p>
         </section>
-        <p>{playerInfo.displayName}</p>
-        <section className="flex justify-between p-4 border-b-2 border-white">
-          <div>
-            {categories.map((category, index) => (
-              <button
-                key={index}
-                className={`${
-                  status === category.status ? 'bg-red-500 border-red-700' : 'bg-[#1A1C21]'
-                } text-white hover:bg-red-500  border-2 hover:border-red-700 box-border shadow-lg p-4 rounded-full font-semibold mr-4`}
-                onClick={() => setStatus(category.status)}
-              >
-                {`# ${category.status}`}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-end">
-            <p>Sort by：</p>
-            {sortOptions.map((option, index) => (
-              <p
-                key={index}
-                className={`${
-                  sortBy === option.sortBy ? 'text-white' : 'text-slate-400'
-                } text-white  shadow-lg  font-semibold mr-4 cursor-pointer hover:text-white`}
-                onClick={() => setSortBy(option.sortBy)}
-              >
-                {`${option.sortBy}`}
-              </p>
-            ))}
+        {/* <p>{playerInfo.displayName}</p> */}
+        <section className="flex justify-between items-end p-4 border-b-2 border-white">
+          <button
+            className=" h-[50%] rounded-xl bg-green-500 border-2 border-green-700 p-2  text-white hover:bg-green-600 disabled:bg-gray-600 disabled:border-transparent  font-bold"
+            onClick={handleCreateGame}
+          >
+            Create Game！
+          </button>
+          <div className="flex flex-col justify-between items-end gap-4">
+            <div className=" flex justify-end gap-4">
+              {categories.map((category, index) => (
+                <button
+                  key={index}
+                  className={`${
+                    status === category.status ? 'bg-red-500 border-red-700' : 'bg-[#1A1C21]'
+                  } text-white hover:bg-red-500  border-2 hover:border-red-700 box-border shadow-lg p-4 rounded-full font-semibold `}
+                  onClick={() => setStatus(category.status)}
+                >
+                  {`# ${category.status}`}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-end">
+              <p>Sort by：</p>
+              {sortOptions.map((option, index) => (
+                <p
+                  key={index}
+                  className={`${
+                    sortBy === option.sortBy ? 'text-white' : 'text-slate-400'
+                  }   shadow-lg  font-semibold mr-4 cursor-pointer hover:text-white`}
+                  onClick={() => setSortBy(option.sortBy)}
+                >
+                  {`${option.sortBy}`}
+                </p>
+              ))}
 
-            <span
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="material-symbols-outlined cursor-pointer"
-            >
-              {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
-            </span>
+              <span
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="material-symbols-outlined cursor-pointer"
+              >
+                {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+              </span>
+            </div>
           </div>
         </section>
         <section className=" grid grid-cols-4 gap-4 p-4">

@@ -33,7 +33,7 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center">
+            <div className="flex justify-center cursor-pointer" onClick={handleJoinGame}>
               <span className="material-symbols-outlined font-bold scale-[200%] ">person_add</span>
             </div>
           )}
@@ -50,7 +50,7 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center">
+            <div className="flex justify-center cursor-pointer" onClick={handleJoinGame}>
               <span className="material-symbols-outlined font-bold scale-[200%] text-black">person_add</span>
             </div>
           )}
@@ -79,13 +79,13 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
           className=" rounded-xl bg-green-500 border-2 border-green-700 p-2  text-white hover:bg-green-600 disabled:bg-gray-600 disabled:border-transparent  font-bold"
           onClick={handleJoinGame}
         >
-          Join Game!
+          {game.gameState === 'waiting' ? 'Join Game！' : 'room is full！'}
         </button>
         <button
           className="rounded-xl bg-red-500 border-2 border-red-700 p-2  text-white hover:bg-red-600 disabled:bg-gray-600 disabled:border-transparent  font-bold"
           onClick={handleSpectateGame}
         >
-          Spectate Game!
+          Spectate Game！
         </button>
       </div>
     </div>
