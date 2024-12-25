@@ -7,18 +7,23 @@ export class Game {
   public black: User | null
   private gameOwnerToken: string
   public spectators: User[]
-  private remainingTime: number
+  private timeLimit: number
+  private remainingTime: {
+    white: number
+    black: number
+  }
   private gameState: 'waiting' | 'in-progress' | 'finished'
   public gameId: string
   private isWhiteTurn: boolean
   private chess = new Chess()
   private winner: User | null
 
-  constructor(gameId: string, private timeLimit: number = 300) {
+  constructor(gameId: string, timeLimit: number = 300) {
     this.white = null
     this.black = null
     this.spectators = []
-    this.remainingTime = timeLimit
+    this.timeLimit = timeLimit
+    this.remainingTime = { white: timeLimit, black: timeLimit }
     this.gameState = 'waiting'
     this.gameId = gameId
     this.isWhiteTurn = true
@@ -129,6 +134,7 @@ export class Game {
       black: this.black?.getInfo(),
       spectators: this.spectators,
       gameState: this.gameState,
+      timeLimit: this.timeLimit,
     }
   }
 

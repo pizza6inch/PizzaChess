@@ -69,7 +69,7 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
         <div className="flex">
           <span className=" material-symbols-outlined ">timer</span>
           <p>
-            {Math.floor(659 / 60)}:{(659 % 60).toString().padStart(2, '0')}
+            {Math.floor(game.timeLimit / 60)}:{(game.timeLimit % 60).toString().padStart(2, '0')}
           </p>
         </div>
       </div>

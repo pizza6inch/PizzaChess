@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
+
+import { setWsConnected } from '@/redux/slices/webSocketSlice'
 import {
   registerSuccess,
   getPlayerInfoSuccess,
@@ -34,6 +36,7 @@ export const WebSocketProvider: React.FC<{
 
     ws.current.onopen = () => {
       console.log('WebSocket connected')
+      dispatch(setWsConnected(true))
     }
 
     ws.current.onmessage = event => {
@@ -81,6 +84,7 @@ export const WebSocketProvider: React.FC<{
 
     ws.current.onclose = () => {
       console.log('WebSocket disconnected')
+      dispatch(setWsConnected(false))
     }
 
     ws.current.onerror = error => {

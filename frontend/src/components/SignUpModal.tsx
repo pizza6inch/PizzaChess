@@ -46,12 +46,8 @@ const SignUpModal = () => {
     if (response.success && response.token) {
       toast.success('Sign up success')
       sessionStorage.setItem('accessToken', response.token)
-      dispatch(setShowSignUpModal(false))
-
-      const infoResponse = await getInfo(response.token)
-      if (infoResponse.success && infoResponse.user) {
-        dispatch(setUser(infoResponse.user))
-      }
+      sessionStorage.removeItem('playerToken')
+      window.location.reload()
     } else {
       toast.error(`Sign up failed:${response.error}`)
     }

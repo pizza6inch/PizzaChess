@@ -52,7 +52,7 @@ const register = (ws: WebSocket, payload: registerPayload) => {
     }
 
     ws.send(JSON.stringify(response))
-    // console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response))
 
     broadcastAllGameStatus()
   } catch (e) {
@@ -62,7 +62,7 @@ const register = (ws: WebSocket, payload: registerPayload) => {
 }
 
 // 當斷線重連時 用playerToken重新加入ws
-const getUserInfo = (ws: WebSocket, payload: GetPlayerInfoPayload) => {
+const getPlayerInfo = (ws: WebSocket, payload: GetPlayerInfoPayload) => {
   try {
     const { playerToken } = payload
 
@@ -80,7 +80,7 @@ const getUserInfo = (ws: WebSocket, payload: GetPlayerInfoPayload) => {
     // send back to ws
 
     const response = {
-      type: 'getUserInfoSuccess',
+      type: 'getPlayerInfoSuccess',
       payload: {
         playerInfo: user.getInfo(),
       },
@@ -441,4 +441,4 @@ const broadcastGameDetail = (game: Game) => {
   console.log(`broadcastGameDetail: `)
 }
 
-export { register, getUserInfo, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect }
+export { register, getPlayerInfo, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect }

@@ -2,7 +2,7 @@ import { WebSocket, RawData } from 'ws'
 
 import {
   register,
-  getUserInfo,
+  getPlayerInfo,
   createGame,
   joinGame,
   startGame,
@@ -18,8 +18,8 @@ export const messageHandler = (ws: WebSocket, data: RawData) => {
       case 'register':
         register(ws, payload)
         break
-      case 'getUserInfo':
-        getUserInfo(ws, payload)
+      case 'getPlayerInfo':
+        getPlayerInfo(ws, payload)
         break
       case 'createGame':
         createGame(ws, payload)

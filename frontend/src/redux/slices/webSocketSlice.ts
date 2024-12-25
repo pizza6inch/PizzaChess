@@ -15,7 +15,6 @@ import {
   GameDetail,
   player,
 } from '../types/webSocket'
-import { get } from 'http'
 
 // 定義 Redux 狀態的型別
 type InitialState = {
@@ -23,6 +22,7 @@ type InitialState = {
   playerInfo: player
   gameOwnerToken: string
   currentGame: GameDetail | null
+  wsConnected: boolean
 }
 
 // 定義初始狀態
@@ -36,6 +36,7 @@ const initialState: InitialState = {
     isInGame: false,
   },
   currentGame: null,
+  wsConnected: false,
 }
 
 // 建立 WebSocket Slice
@@ -43,6 +44,9 @@ const webSocketSlice = createSlice({
   name: 'WebSocket',
   initialState,
   reducers: {
+    setWsConnected: (state, action: PayloadAction<boolean>) => {
+      state.wsConnected = action.payload
+    },
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
       const { playerToken, playerInfo } = action.payload
       state.playerInfo = playerInfo
@@ -89,7 +93,9 @@ const webSocketSlice = createSlice({
 
 // 匯出 actions
 export const {
+  setWsConnected,
   registerSuccess,
+  getPlayerInfoSuccess,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,

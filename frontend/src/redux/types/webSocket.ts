@@ -55,7 +55,11 @@ type GameDetail = {
   fen: string
   moves: string[]
   isEnd: boolean
-  remainingTime: number
+  timeLimit: number
+  remainingTime: {
+    white: number
+    black: number
+  }
   gameState: 'waiting' | 'in-progress' | 'finished'
   isWhiteTurn: boolean
   winner: player | null
@@ -67,6 +71,7 @@ type GameInfo = {
   black: player | null
   spectators: player[]
   gameState: 'waiting' | 'in-progress' | 'finished'
+  timeLimit: number
 }
 
 type player = {

@@ -7,14 +7,16 @@ import { RootState } from '../redux/store'
 import { signup, login, updatePassword, getInfo } from '@/serverActions/user'
 import { setShowSignInModal, setShowSignUpModal } from '@/redux/slices/modalSlice'
 
+import { useRouter } from 'next/navigation'
+
 import { setUser } from '@/redux/slices/authSlice'
-import { toast } from 'react-toastify'
-import { Sheet } from './ui/sheet'
 
 import TitleIcon from './TitleIcon'
 
 const Header = () => {
   const { user } = useSelector((state: RootState) => state.auth)
+
+  const router = useRouter()
 
   const dispatch = useDispatch()
 
@@ -50,11 +52,20 @@ const Header = () => {
       title: 'settings',
       url: '/settings',
       icon: 'manage_accounts',
+      onclick: () => {
+        router.push('/')
+        setShowAccountPopover(false)
+        // 待動工
+      },
     },
     {
       title: 'logout',
       url: '/logout',
       icon: 'logout',
+      onclick: () => {
+        dispatch(setUser(null))
+        sessionStorage.removeItem('accessToken')
+      },
     },
   ]
 
@@ -145,16 +156,21 @@ const Header = () => {
                 <p>{`ratings：${user.rating}`}</p>
                 <div className="w-full h-[2px] bg-white" />
                 <div className="flex flex-col gap-4">
-                  {accountItems.map((item, index) => (
-                    <Link
-                      href={item.url}
-                      key={index}
-                      className="flex gap-4 items-center hover:bg-red-600 rounded-lg p-2"
-                    >
-                      <span className="material-symbols-outlined">{item.icon}</span>
-                      <p className=" font-light">{item.title.toUpperCase()}</p>
-                    </Link>
-                  ))}
+                  <Link href={'/settings'} className="flex gap-4 items-center hover:bg-red-600 rounded-lg p-2">
+                    <span className="material-symbols-outlined">settings</span>
+                    <p className=" font-light">SETTINGS</p>
+                  </Link>
+                  <div
+                    onClick={() => {
+                      sessionStorage.removeItem('accessToken')
+                      sessionStorage.removeItem('playerToken')
+                      window.location.reload()
+                    }}
+                    className="flex gap-4 items-center hover:cursor-pointer hover:bg-red-600 rounded-lg p-2"
+                  >
+                    <span className="material-symbols-outlined">logout</span>
+                    <p className=" font-light">LOGOUT</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -179,6 +195,7 @@ const Header = () => {
                   <Link
                     href={item.url}
                     className="flex gap-4 justify-between items-center transition-all duration-300 bg-transparent hover:bg-red-600 rounded-lg p-4"
+                    onClick={() => setShowSideBar(false)}
                   >
                     <span className="material-symbols-outlined">{item.icon}</span>
                     <p className="font-semibold">{item.title.toUpperCase()}</p>
