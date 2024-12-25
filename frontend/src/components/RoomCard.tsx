@@ -4,6 +4,14 @@ import { GameInfo, player } from '@/redux/types/webSocket'
 import { useRouter } from 'next/navigation'
 
 const RoomCard = ({ game }: { game: GameInfo }) => {
+  const handleJoinGame = () => {
+    console.log('join logic')
+  }
+
+  const handleSpectateGame = () => {
+    console.log('spectate logic')
+  }
+
   return (
     <div className=" bg-[#313638] rounded-xl p-4">
       <div className="flex justify-between mb-4">
@@ -69,10 +77,14 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
         <button
           disabled={game.gameState !== 'waiting'}
           className=" rounded-xl bg-green-500 border-2 border-green-700 p-2  text-white hover:bg-green-600 disabled:bg-gray-600 disabled:border-transparent  font-bold"
+          onClick={handleJoinGame}
         >
           Join Game!
         </button>
-        <button className="rounded-xl bg-red-500 border-2 border-red-700 p-2  text-white hover:bg-red-600 disabled:bg-gray-600 disabled:border-transparent  font-bold">
+        <button
+          className="rounded-xl bg-red-500 border-2 border-red-700 p-2  text-white hover:bg-red-600 disabled:bg-gray-600 disabled:border-transparent  font-bold"
+          onClick={handleSpectateGame}
+        >
           Spectate Game!
         </button>
       </div>

@@ -10,13 +10,14 @@ import 'chessground/assets/chessground.cburnett.css'
 
 import { useSelector } from 'react-redux'
 import { useWebSocket } from '@/contexts/WebSocketProvider'
+import { useRouter, usePathname } from 'next/navigation'
 
 const ChessGame = () => {
   const { sendMessage } = useWebSocket()
 
-  const { playerToken, gameOwnerToken, games, playerInfo, currentGame } = useSelector(
-    (state: RootState) => state.websocket
-  )
+  const { gameOwnerToken, games, playerInfo, currentGame } = useSelector((state: RootState) => state.websocket)
+
+  const router = useRouter()
 
   console.log(currentGame?.fen)
 
@@ -27,8 +28,11 @@ const ChessGame = () => {
   }, [currentGame])
 
   const afterHandler = (orig: string, dest: string) => {
+    if (sessionStorage.getItem('playerToken') === null) {
+      router.push('/room')
+    }
     sendMessage('makeMove', {
-      playerToken,
+      playerToken: sessionStorage.getItem('playerToken'),
       gameId: currentGame?.gameId,
       move: { from: orig, to: dest },
     })

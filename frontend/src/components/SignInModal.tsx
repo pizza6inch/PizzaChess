@@ -38,7 +38,7 @@ const SignInModal = () => {
 
     if (response.success && response.token) {
       toast.success('Login success')
-      localStorage.setItem('accessToken', response.token)
+      sessionStorage.setItem('accessToken', response.token)
       dispatch(setShowSignInModal(false))
 
       const infoResponse = await getInfo(response.token)

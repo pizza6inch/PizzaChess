@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import {
   registerSuccess,
+  getPlayerInfoSuccess,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,
@@ -44,6 +45,9 @@ export const WebSocketProvider: React.FC<{
       switch (type) {
         case 'registerSuccess':
           dispatch(registerSuccess(payload))
+          break
+        case 'getPlayerInfoSuccess':
+          dispatch(getPlayerInfoSuccess(payload))
           break
         case 'createGameSuccess':
           dispatch(createGameSuccess(payload))

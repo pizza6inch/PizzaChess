@@ -1,8 +1,10 @@
 type registerPayload = {
   displayName: string
-  email: string
   rating: number
-  password: string
+}
+
+type GetPlayerInfoPayload = {
+  playerToken: string
 }
 
 type CreateGamePayload = {
@@ -44,6 +46,7 @@ type makeMovePayload = {
 
 export {
   registerPayload,
+  GetPlayerInfoPayload,
   CreateGamePayload,
   JoinGamePayload,
   spectateGamePayload,

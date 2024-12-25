@@ -4,6 +4,7 @@ import {
   GameDetailPayload,
   AllGameStatusPayload,
   RegisterSuccessPayload,
+  GetPlayerInfoSuccessPayload,
   CreateGameSuccessPayload,
   JoinGameSuccessPayload,
   SpectateGameSuccessPayload,
@@ -14,12 +15,12 @@ import {
   GameDetail,
   player,
 } from '../types/webSocket'
+import { get } from 'http'
 
 // 定義 Redux 狀態的型別
 type InitialState = {
   games: GameInfo[] // 通用訊息的陣列
   playerInfo: player
-  playerToken: string
   gameOwnerToken: string
   currentGame: GameDetail | null
 }
@@ -27,13 +28,11 @@ type InitialState = {
 // 定義初始狀態
 const initialState: InitialState = {
   games: [],
-  playerToken: '',
   gameOwnerToken: '',
   playerInfo: {
     id: '',
     displayName: '',
     rating: 0,
-    email: '',
     isInGame: false,
   },
   currentGame: null,
@@ -46,7 +45,11 @@ const webSocketSlice = createSlice({
   reducers: {
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
       const { playerToken, playerInfo } = action.payload
-      state.playerToken = playerToken
+      state.playerInfo = playerInfo
+      sessionStorage.setItem('playerToken', playerToken)
+    },
+    getPlayerInfoSuccess: (state, action: PayloadAction<GetPlayerInfoSuccessPayload>) => {
+      const { playerInfo } = action.payload
       state.playerInfo = playerInfo
     },
     createGameSuccess: (state, action: PayloadAction<CreateGameSuccessPayload>) => {

@@ -84,7 +84,7 @@ const Header = () => {
 
   useEffect(() => {
     const authUser = async () => {
-      const accessToken = localStorage.getItem('accessToken')
+      const accessToken = sessionStorage.getItem('accessToken')
       if (accessToken) {
         const response = await getInfo(accessToken)
         if (response.success && response.user) {
@@ -170,7 +170,7 @@ const Header = () => {
               setShowSideBar(false)
             }}
           />
-          <header className="fixed top-0 left-0 h-[100vh] w-[300px] bg-black z-30 text-white p-6 transition-all duration-200 animate-slide-in">
+          <nav className="fixed top-0 left-0 h-[100vh] w-[300px] bg-black z-30 text-white p-6 transition-all duration-200 animate-slide-in">
             <TitleIcon />
             <h2 className="text-2xl font-bold mt-8">Menu</h2>
             <ul className="mt-6 flex flex-col gap-6">
@@ -187,7 +187,7 @@ const Header = () => {
                 </li>
               ))}
             </ul>
-          </header>
+          </nav>
         </>
       )}
     </>

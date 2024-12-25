@@ -5,6 +5,10 @@ type RegisterSuccessPayload = {
   playerInfo: player
 }
 
+type GetPlayerInfoSuccessPayload = {
+  playerInfo: player
+}
+
 type CreateGameSuccessPayload = {
   gameId: string
   gameOwnerToken: string
@@ -69,7 +73,6 @@ type player = {
   id: string
   displayName: string
   rating: number
-  email: string
   isInGame: boolean
 }
 
@@ -77,6 +80,7 @@ export type {
   GameDetailPayload,
   AllGameStatusPayload,
   RegisterSuccessPayload,
+  GetPlayerInfoSuccessPayload,
   CreateGameSuccessPayload,
   JoinGameSuccessPayload,
   SpectateGameSuccessPayload,

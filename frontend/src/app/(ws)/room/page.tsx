@@ -17,9 +17,9 @@ export default function Room() {
 
   const router = useRouter()
 
-  const { playerToken, gameOwnerToken, games, playerInfo, currentGame } = useSelector(
-    (state: RootState) => state.websocket
-  )
+  const { gameOwnerToken, games, playerInfo, currentGame } = useSelector((state: RootState) => state.websocket)
+
+  const { user } = useSelector((state: RootState) => state.auth)
 
   const [status, setStatus] = useState<string | null>(null)
 
@@ -132,12 +132,51 @@ export default function Room() {
     },
   ]
 
+  useEffect(() => {
+    const handleRegister = (displayName: string, rating: number) => {
+      const payload = {
+        displayName: displayName,
+        rating: rating,
+      }
+      sendMessage('register', payload)
+    }
+
+    const handleGetUserInfo = () => {
+      const payload = {
+        playerToken: sessionStorage.getItem('playerToken'),
+      }
+      sendMessage('getPlayerInfo', payload)
+    }
+
+    // 如果沒有playerToken就向ws server 註冊一個
+    if (!sessionStorage.getItem('playerToken')) {
+      if (sessionStorage.getItem('accessToken')) {
+        if (user) {
+          handleRegister(user.displayName, user.rating)
+        }
+      } else {
+        // generate random string as display name
+        const randomName = Math.random().toString(36).substring(2, 6)
+        handleRegister(randomName, 1200)
+      }
+    }
+
+    if (sessionStorage.getItem('playerToken')) {
+      handleGetUserInfo()
+    }
+  }, [user])
+
+  useEffect(() => {
+    console.log('playerInfo', playerInfo)
+  }, [playerInfo])
+
   return (
     <>
       <div className="bg-black text-white pt-[100px] px-[5%]">
         <section className="flex justify-between items-center p-4">
           <h1 className=" font-bold text-3xl">Room List</h1>
           <p className="font-semibold text-2xl">{`${games.length} Games`}</p>
+          <p>{playerInfo.displayName}</p>
         </section>
         <section className="flex p-4 border-b-2 border-white">
           {categories.map((category, index) => (

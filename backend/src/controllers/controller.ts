@@ -1,5 +1,6 @@
 import {
   registerPayload,
+  GetPlayerInfoPayload,
   CreateGamePayload,
   JoinGamePayload,
   leaveGamePayload,
@@ -24,7 +25,7 @@ let gameCount = 0
 
 const register = (ws: WebSocket, payload: registerPayload) => {
   try {
-    const { displayName, email, rating, password } = payload
+    const { displayName, rating } = payload
 
     if (WebSockets.includes(ws)) {
       throw new Error('user already registered')
@@ -34,9 +35,9 @@ const register = (ws: WebSocket, payload: registerPayload) => {
 
     const userId = (userCount + 1).toString()
     userCount += 1
-    const user = new User(userId, displayName, email, rating, ws)
+    const user = new User(userId, displayName, rating, ws)
 
-    const playerToken = generateToken(userId, password)
+    const playerToken = generateToken(userId, displayName)
 
     users.set(playerToken, user)
 
@@ -57,6 +58,40 @@ const register = (ws: WebSocket, payload: registerPayload) => {
   } catch (e) {
     console.log(`errorMessage: register error ${e}`)
     errorHandler(ws, e, `register`)
+  }
+}
+
+// 當斷線重連時 用playerToken重新加入ws
+const getUserInfo = (ws: WebSocket, payload: GetPlayerInfoPayload) => {
+  try {
+    const { playerToken } = payload
+
+    const user = users.get(playerToken)
+
+    if (!user) {
+      throw new Error('invalid playerToken')
+    }
+
+    if (!WebSockets.includes(ws)) {
+      user.setNewWs(ws)
+      WebSockets.push(ws)
+    }
+
+    // send back to ws
+
+    const response = {
+      type: 'getUserInfoSuccess',
+      payload: {
+        playerInfo: user.getInfo(),
+      },
+    }
+
+    ws.send(JSON.stringify(response))
+
+    broadcastAllGameStatus()
+  } catch (e) {
+    console.log(`errorMessage: getUserInfoSuccess error ${e}`)
+    errorHandler(ws, e, `getUserInfoSuccess`)
   }
 }
 
@@ -406,4 +441,4 @@ const broadcastGameDetail = (game: Game) => {
   console.log(`broadcastGameDetail: `)
 }
 
-export { register, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect }
+export { register, getUserInfo, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect }

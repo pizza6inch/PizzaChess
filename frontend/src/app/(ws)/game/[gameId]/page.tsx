@@ -10,7 +10,7 @@ import ChessGame from '@/components/ChessBoard'
 const GamePage = () => {
   // const { sendMessage } = useWebSocket();
 
-  // const { playerToken, gameOwnerToken, games, playerInfo, currentGame } =
+  // const {  gameOwnerToken, games, playerInfo, currentGame } =
   //   useSelector((state: RootState) => state.websocket);
 
   // const pathname = usePathname();

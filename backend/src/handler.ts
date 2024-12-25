@@ -1,6 +1,15 @@
 import { WebSocket, RawData } from 'ws'
 
-import { register, createGame, joinGame, startGame, leaveGame, spectateGame, makeMove } from './controllers/controller'
+import {
+  register,
+  getUserInfo,
+  createGame,
+  joinGame,
+  startGame,
+  leaveGame,
+  spectateGame,
+  makeMove,
+} from './controllers/controller'
 
 export const messageHandler = (ws: WebSocket, data: RawData) => {
   try {
@@ -8,6 +17,9 @@ export const messageHandler = (ws: WebSocket, data: RawData) => {
     switch (type) {
       case 'register':
         register(ws, payload)
+        break
+      case 'getUserInfo':
+        getUserInfo(ws, payload)
         break
       case 'createGame':
         createGame(ws, payload)

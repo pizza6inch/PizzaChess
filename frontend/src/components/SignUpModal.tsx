@@ -45,7 +45,7 @@ const SignUpModal = () => {
 
     if (response.success && response.token) {
       toast.success('Sign up success')
-      localStorage.setItem('accessToken', response.token)
+      sessionStorage.setItem('accessToken', response.token)
       dispatch(setShowSignUpModal(false))
 
       const infoResponse = await getInfo(response.token)
