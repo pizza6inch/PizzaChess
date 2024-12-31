@@ -1,31 +1,31 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 // import {} from './types'
 
 type user = {
-  username: string
-  displayName: string
-  rating: number
-} | null
+  username: string;
+  displayName: string;
+  rating: number;
+} | null;
 
 type InitialState = {
-  user: user
-}
+  user: user;
+};
 
 const initialState: InitialState = {
   user: null,
-}
+};
 
 const authSlice = createSlice({
-  name: 'Auth',
+  name: "Auth",
   initialState,
   reducers: {
     setUser: (state, action: { type: string; payload: user }) => {
-      state.user = action.payload
+      state.user = action.payload;
     },
   },
-})
+});
 
-export const { setUser } = authSlice.actions
+export const { setUser } = authSlice.actions;
 
-export default authSlice
+export default authSlice;

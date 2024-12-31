@@ -1,221 +1,227 @@
-'use client'
+"use client";
 
-import '@/app/global.css'
-import React, { useState, useEffect } from 'react'
-import { useWebSocket } from '@/contexts/WebSocketProvider'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/redux/store'
+import "@/app/global.css";
+import React, { useState, useEffect } from "react";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
-import RoomCard from '@/components/RoomCard'
+import RoomCard from "@/components/RoomCard";
 
-import { GameInfo } from '@/redux/types/webSocket'
+import { GameInfo } from "@/redux/types/webSocket";
 
-type status = 'ALL' | 'In-Game' | 'Available'
+type status = "ALL" | "In-Game" | "Available";
 
-type sortBy = 'GameId' | 'Timer' | 'Rating' | 'Most People'
+type sortBy = "GameId" | "Timer" | "Rating" | "Most People";
 
-type sortOrder = 'asc' | 'desc'
+type sortOrder = "asc" | "desc";
 
 export default function Room() {
-  const { sendMessage } = useWebSocket()
+  const { sendMessage } = useWebSocket();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const { wsConnected, gameOwnerToken, games, playerInfo, currentGame } = useSelector(
-    (state: RootState) => state.websocket
-  )
+  const { wsConnected, gameOwnerToken, games, playerInfo, currentGame } =
+    useSelector((state: RootState) => state.websocket);
 
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  const [status, setStatus] = useState<status>('ALL')
-  const [sortBy, setSortBy] = useState<sortBy>('GameId')
-  const [sortOrder, setSortOrder] = useState<sortOrder>('asc')
+  const [status, setStatus] = useState<status>("ALL");
+  const [sortBy, setSortBy] = useState<sortBy>("GameId");
+  const [sortOrder, setSortOrder] = useState<sortOrder>("asc");
 
-  const categories: Array<{ status: status }> = [{ status: 'ALL' }, { status: 'In-Game' }, { status: 'Available' }]
+  const categories: Array<{ status: status }> = [
+    { status: "ALL" },
+    { status: "In-Game" },
+    { status: "Available" },
+  ];
   const sortOptions: Array<{ sortBy: sortBy }> = [
-    { sortBy: 'GameId' },
-    { sortBy: 'Timer' },
-    { sortBy: 'Rating' },
-    { sortBy: 'Most People' },
-  ]
+    { sortBy: "GameId" },
+    { sortBy: "Timer" },
+    { sortBy: "Rating" },
+    { sortBy: "Most People" },
+  ];
 
   const testGames: GameInfo[] = [
     {
-      'gameId': '0',
-      'white': null,
+      gameId: "0",
+      white: null,
       black: {
-        'id': '1',
-        'displayName': 'pizza6inch',
-        'rating': 1250,
-        'isInGame': true,
+        id: "1",
+        displayName: "pizza6inch",
+        rating: 1250,
+        isInGame: true,
       },
-      'spectators': [
+      spectators: [
         {
-          'id': '1',
-          'displayName': '123',
-          'rating': 0,
-          'isInGame': true,
+          id: "1",
+          displayName: "123",
+          rating: 0,
+          isInGame: true,
         },
       ],
-      'gameState': 'waiting',
+      gameState: "waiting",
       timeLimit: 600,
       // gameState: 'waiting' | 'in-progress' | 'finished'
     },
     {
-      'gameId': '1',
-      'white': null,
+      gameId: "1",
+      white: null,
       black: {
-        'id': '1',
-        'displayName': 'pizza6inch',
-        'rating': 1200,
-        'isInGame': true,
+        id: "1",
+        displayName: "pizza6inch",
+        rating: 1200,
+        isInGame: true,
       },
-      'spectators': [
+      spectators: [
         {
-          'id': '1',
-          'displayName': '123',
-          'rating': 0,
-          'isInGame': true,
+          id: "1",
+          displayName: "123",
+          rating: 0,
+          isInGame: true,
         },
       ],
-      'gameState': 'waiting',
+      gameState: "waiting",
       timeLimit: 659,
     },
     {
-      'gameId': '2',
-      'white': null,
+      gameId: "2",
+      white: null,
       black: {
-        'id': '1',
-        'displayName': 'pizza6inch',
-        'rating': 1201,
-        'isInGame': true,
+        id: "1",
+        displayName: "pizza6inch",
+        rating: 1201,
+        isInGame: true,
       },
-      'spectators': [
+      spectators: [
         {
-          'id': '1',
-          'displayName': '123',
-          'rating': 0,
-          'isInGame': true,
+          id: "1",
+          displayName: "123",
+          rating: 0,
+          isInGame: true,
         },
       ],
-      'gameState': 'waiting',
+      gameState: "waiting",
       timeLimit: 659,
     },
     {
-      'gameId': '3',
-      'white': {
-        'id': '1',
-        'displayName': 'pizza6inch',
-        'rating': 1203,
-        'isInGame': true,
+      gameId: "3",
+      white: {
+        id: "1",
+        displayName: "pizza6inch",
+        rating: 1203,
+        isInGame: true,
       },
       black: null,
-      'spectators': [
+      spectators: [
         {
-          'id': '1',
-          'displayName': '123',
-          'rating': 0,
-          'isInGame': true,
+          id: "1",
+          displayName: "123",
+          rating: 0,
+          isInGame: true,
         },
       ],
-      'gameState': 'in-progress',
+      gameState: "in-progress",
       timeLimit: 300,
     },
     {
-      'gameId': '4',
-      'white': {
-        'id': '1',
-        'displayName': 'pizza6inch',
-        'rating': 1204,
-        'isInGame': true,
+      gameId: "4",
+      white: {
+        id: "1",
+        displayName: "pizza6inch",
+        rating: 1204,
+        isInGame: true,
       },
       black: {
-        'id': '1',
-        'displayName': 'pizza6inch',
-        'rating': 1205,
-        'isInGame': true,
+        id: "1",
+        displayName: "pizza6inch",
+        rating: 1205,
+        isInGame: true,
       },
-      'spectators': [],
-      'gameState': 'finished',
+      spectators: [],
+      gameState: "finished",
       timeLimit: 450,
     },
-  ]
+  ];
 
   useEffect(() => {
-    if (!wsConnected) return
-    if (currentGame) router.push(`/game/${currentGame.gameId}`)
-  }, [wsConnected, currentGame, router])
+    if (!wsConnected) return;
+    if (currentGame) router.push(`/game/${currentGame.gameId}`);
+  }, [wsConnected, currentGame, router]);
 
   useEffect(() => {
     const handleRegister = (displayName: string, rating: number) => {
       const payload = {
         displayName: displayName,
         rating: rating,
-      }
-      sendMessage('register', payload)
-    }
+      };
+      sendMessage("register", payload);
+    };
 
     const handleGetPlayerInfo = () => {
       const payload = {
-        playerToken: sessionStorage.getItem('playerToken'),
-      }
-      sendMessage('getPlayerInfo', payload)
-    }
+        playerToken: sessionStorage.getItem("playerToken"),
+      };
+      sendMessage("getPlayerInfo", payload);
+    };
 
-    if (!wsConnected) return
+    if (!wsConnected) return;
 
     // 如果沒有playerToken就向ws server 註冊一個
-    if (!sessionStorage.getItem('playerToken')) {
-      if (sessionStorage.getItem('accessToken')) {
+    if (!sessionStorage.getItem("playerToken")) {
+      if (sessionStorage.getItem("accessToken")) {
         if (user) {
-          handleRegister(user.displayName, user.rating)
+          handleRegister(user.displayName, user.rating);
         }
       } else {
         // generate random string as display name
-        const randomName = Math.random().toString(36).substring(2, 6)
-        handleRegister(`${randomName}_guest`, 1200)
+        const randomName = Math.random().toString(36).substring(2, 6);
+        handleRegister(`${randomName}_guest`, 1200);
       }
     }
 
-    if (sessionStorage.getItem('playerToken')) {
-      handleGetPlayerInfo()
+    if (sessionStorage.getItem("playerToken")) {
+      handleGetPlayerInfo();
     }
-  }, [wsConnected, user])
+  }, [wsConnected, user]);
 
   const handleCreateGame = () => {
     const payload = {
-      playerToken: sessionStorage.getItem('playerToken'),
+      playerToken: sessionStorage.getItem("playerToken"),
       playWhite: true,
       timeLimit: 600,
-    }
-    sendMessage('createGame', payload)
-  }
+    };
+    sendMessage("createGame", payload);
+  };
 
   return (
     <>
-      <div className="bg-black text-white pt-[100px] px-[5%]">
-        <section className="flex justify-between items-center p-4">
-          <h1 className=" font-bold text-3xl">Room List</h1>
-          <p className="font-semibold text-2xl">{`${games.length} Games`}</p>
+      <div className="bg-black px-[5%] pt-[100px] text-white">
+        <section className="flex items-center justify-between p-4">
+          <h1 className="text-3xl font-bold">Room List</h1>
+          <p className="text-2xl font-semibold">{`${games.length} Games`}</p>
         </section>
         {/* <p>{playerInfo.displayName}</p> */}
-        <section className="flex justify-between items-end p-4 border-b-2 border-white">
+        <section className="flex items-end justify-between border-b-2 border-white p-4">
           <button
-            className=" h-[50%] rounded-xl bg-green-500 border-2 border-green-700 p-2  text-white hover:bg-green-600 disabled:bg-gray-600 disabled:border-transparent  font-bold"
+            className="flex h-[50%] rounded-xl border-2 border-green-700 bg-green-500 p-2 font-bold text-white hover:bg-green-600 disabled:border-transparent disabled:bg-gray-600"
             onClick={handleCreateGame}
           >
-            Create Game！
+            <span className="material-symbols-outlined">add</span>
+            <p>Create Game！</p>
           </button>
-          <div className="flex flex-col justify-between items-end gap-4">
-            <div className=" flex justify-end gap-4">
+          <div className="flex flex-col items-end justify-between gap-4">
+            <div className="flex justify-end gap-4">
               {categories.map((category, index) => (
                 <button
                   key={index}
                   className={`${
-                    status === category.status ? 'bg-red-500 border-red-700' : 'bg-[#1A1C21]'
-                  } text-white hover:bg-red-500  border-2 hover:border-red-700 box-border shadow-lg p-4 rounded-full font-semibold `}
+                    status === category.status
+                      ? "border-red-700 bg-red-500"
+                      : "bg-[#1A1C21]"
+                  } box-border rounded-full border-2 p-4 font-semibold text-white shadow-lg hover:border-red-700 hover:bg-red-500`}
                   onClick={() => setStatus(category.status)}
                 >
                   {`# ${category.status}`}
@@ -228,8 +234,8 @@ export default function Room() {
                 <p
                   key={index}
                   className={`${
-                    sortBy === option.sortBy ? 'text-white' : 'text-slate-400'
-                  }   shadow-lg  font-semibold mr-4 cursor-pointer hover:text-white`}
+                    sortBy === option.sortBy ? "text-white" : "text-slate-400"
+                  } mr-4 cursor-pointer font-semibold shadow-lg hover:text-white`}
                   onClick={() => setSortBy(option.sortBy)}
                 >
                   {`${option.sortBy}`}
@@ -237,21 +243,28 @@ export default function Room() {
               ))}
 
               <span
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                onClick={() =>
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                }
                 className="material-symbols-outlined cursor-pointer"
               >
-                {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                {sortOrder === "asc" ? "arrow_upward" : "arrow_downward"}
               </span>
             </div>
           </div>
         </section>
-        <section className=" grid grid-cols-4 gap-4 p-4">
-          <GameList games={testGames} status={status} sortBy={sortBy} sortOrder={sortOrder} />
+        <section className="grid grid-cols-1 gap-4 p-4 md:grid-cols-3 lg:grid-cols-4">
+          <GameList
+            games={testGames}
+            status={status}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+          />
         </section>
         {/* <Test /> */}
       </div>
     </>
-  )
+  );
 }
 
 const GameList = ({
@@ -260,36 +273,48 @@ const GameList = ({
   sortOrder,
   games,
 }: {
-  status: status
-  sortBy: sortBy
-  sortOrder: sortOrder
-  games: GameInfo[]
+  status: status;
+  sortBy: sortBy;
+  sortOrder: sortOrder;
+  games: GameInfo[];
 }) => {
-  const filteredGames = games.filter(game => {
-    if (status === 'In-Game') return game.gameState === 'in-progress'
-    if (status === 'Available') return game.gameState === 'waiting'
-    return true // 'ALL'
-  })
+  const filteredGames = games.filter((game) => {
+    if (status === "In-Game") return game.gameState === "in-progress";
+    if (status === "Available") return game.gameState === "waiting";
+    return true; // 'ALL'
+  });
 
   const sortedGames = filteredGames.sort((a, b) => {
-    if (sortOrder === 'asc') {
-      if (sortBy === 'GameId') return a.gameId.localeCompare(b.gameId)
-      if (sortBy === 'Timer') return a.timeLimit - b.timeLimit
-      if (sortBy === 'Rating') {
-        return (a?.white?.rating ?? 0) + (a?.black?.rating ?? 0) - (b?.white?.rating ?? 0) - (b?.black?.rating ?? 0)
+    if (sortOrder === "asc") {
+      if (sortBy === "GameId") return a.gameId.localeCompare(b.gameId);
+      if (sortBy === "Timer") return a.timeLimit - b.timeLimit;
+      if (sortBy === "Rating") {
+        return (
+          (a?.white?.rating ?? 0) +
+          (a?.black?.rating ?? 0) -
+          (b?.white?.rating ?? 0) -
+          (b?.black?.rating ?? 0)
+        );
       }
-      if (sortBy === 'Most People') return a.spectators.length - b.spectators.length
+      if (sortBy === "Most People")
+        return a.spectators.length - b.spectators.length;
     }
-    if (sortOrder === 'desc') {
-      if (sortBy === 'GameId') return b.gameId.localeCompare(a.gameId)
-      if (sortBy === 'Timer') return b.timeLimit - a.timeLimit
-      if (sortBy === 'Rating') {
-        return (b?.white?.rating ?? 0) + (b?.black?.rating ?? 0) - (a?.white?.rating ?? 0) - (a?.black?.rating ?? 0)
+    if (sortOrder === "desc") {
+      if (sortBy === "GameId") return b.gameId.localeCompare(a.gameId);
+      if (sortBy === "Timer") return b.timeLimit - a.timeLimit;
+      if (sortBy === "Rating") {
+        return (
+          (b?.white?.rating ?? 0) +
+          (b?.black?.rating ?? 0) -
+          (a?.white?.rating ?? 0) -
+          (a?.black?.rating ?? 0)
+        );
       }
-      if (sortBy === 'Most People') return b.spectators.length - a.spectators.length
+      if (sortBy === "Most People")
+        return b.spectators.length - a.spectators.length;
     }
-    return 0
-  })
+    return 0;
+  });
 
   return (
     <>
@@ -297,5 +322,5 @@ const GameList = ({
         <RoomCard key={index} game={game} />
       ))}
     </>
-  )
-}
+  );
+};
