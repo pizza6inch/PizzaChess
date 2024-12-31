@@ -13,7 +13,7 @@ import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { useRouter, usePathname } from "next/navigation";
 
 const ChessGame = () => {
-  const { sendMessage } = useWebSocket();
+  const { makeMove } = useWebSocket();
 
   const { gameOwnerToken, games, playerInfo, currentGame } = useSelector(
     (state: RootState) => state.websocket,
@@ -30,14 +30,23 @@ const ChessGame = () => {
   }, [currentGame]);
 
   const afterHandler = (orig: string, dest: string) => {
-    if (sessionStorage.getItem("playerToken") === null) {
+    const playerToken = sessionStorage.getItem("playerToken");
+
+    if (playerToken === null) {
       router.push("/room");
+      return;
     }
-    sendMessage("makeMove", {
-      playerToken: sessionStorage.getItem("playerToken"),
-      gameId: currentGame?.gameId,
+
+    if (currentGame === null) {
+      router.push("/room");
+      return;
+    }
+    const payload = {
+      playerToken: playerToken,
+      gameId: currentGame.gameId,
       move: { from: orig, to: dest },
-    });
+    };
+    makeMove(payload);
   };
 
   const onSelect = (key: string) => {

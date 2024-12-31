@@ -1,11 +1,27 @@
 import React from "react";
 
-import { GameInfo, player } from "@/redux/types/webSocket";
+import { GameInfo, player } from "@/types/webSocket";
+import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const RoomCard = ({ game }: { game: GameInfo }) => {
+  const { joinGame } = useWebSocket();
+
   const handleJoinGame = () => {
-    console.log("join logic");
+    const playerToken = sessionStorage.getItem("playerToken");
+
+    if (playerToken === null) {
+      toast.error("Please login first!");
+      return;
+    }
+
+    const payload = {
+      playerToken: playerToken,
+      gameId: game.gameId,
+    };
+
+    joinGame(payload);
   };
 
   const handleSpectateGame = () => {
@@ -70,7 +86,7 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
           )}
         </div>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between">
         {game.gameState === "waiting" && (
           <div className="rounded-3xl border-2 border-green-700 bg-green-500 p-2">
             {game.gameState}
@@ -86,7 +102,7 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
             {game.gameState}
           </div>
         )}
-        <div className="flex">
+        <div className="flex items-end gap-2">
           <span className="material-symbols-outlined">timer</span>
           <p>
             {Math.floor(game.timeLimit / 60)}:
@@ -97,16 +113,20 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
       <div className="mt-4 flex flex-col gap-2">
         <button
           disabled={game.gameState !== "waiting"}
-          className="rounded-xl border-2 border-green-700 bg-green-500 p-2 font-bold text-white hover:bg-green-600 disabled:border-transparent disabled:bg-gray-600"
+          className="flex items-center justify-center gap-2 rounded-xl border-2 border-green-700 bg-green-500 p-2 font-bold text-white hover:bg-green-600 disabled:border-transparent disabled:bg-gray-600"
           onClick={handleJoinGame}
         >
-          {game.gameState === "waiting" ? "Join Game！" : "room is full！"}
+          <span className="material-symbols-outlined">add</span>
+          <p>
+            {game.gameState === "waiting" ? "Join Game！" : "room is full！"}
+          </p>
         </button>
         <button
-          className="rounded-xl border-2 border-red-700 bg-red-500 p-2 font-bold text-white hover:bg-red-600 disabled:border-transparent disabled:bg-gray-600"
+          className="flex items-center justify-center gap-2 rounded-xl border-2 border-red-700 bg-red-500 p-2 font-bold text-white hover:bg-red-600 disabled:border-transparent disabled:bg-gray-600"
           onClick={handleSpectateGame}
         >
-          Spectate Game！
+          <span className="material-symbols-outlined">visibility</span>
+          <p>Spectate Game！</p>
         </button>
       </div>
     </div>

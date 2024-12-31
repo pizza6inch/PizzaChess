@@ -16,9 +16,27 @@ import {
   leaveGameSuccess,
 } from "@/redux/slices/webSocketSlice";
 
+import {
+  createGamePayload,
+  joinGamePayload,
+  spectateGamePayload,
+  startGamePayload,
+  leaveGamePayload,
+  registerPayload,
+  getPlayerInfoPayload,
+  makeMovePayload,
+} from "@/types/webSocket";
+
 // 定義 Context 類型
 interface WebSocketContextType {
-  sendMessage: (type: string, payload: any) => void;
+  createGame: (payload: createGamePayload) => void;
+  joinGame: (payload: joinGamePayload) => void;
+  spectateGame: (payload: spectateGamePayload) => void;
+  startGame: (payload: startGamePayload) => void;
+  leaveGame: (payload: leaveGamePayload) => void;
+  register: (payload: registerPayload) => void;
+  getPlayerInfo: (payload: getPlayerInfoPayload) => void;
+  makeMove: (payload: makeMovePayload) => void;
 }
 
 // 建立 Context
@@ -52,6 +70,7 @@ export const WebSocketProvider: React.FC<{
         case "getPlayerInfoSuccess":
           dispatch(getPlayerInfoSuccess(payload));
           break;
+        // TODO:: 新增一個getPlayerInfoFailed 後端多寫一個error type
         case "createGameSuccess":
           dispatch(createGameSuccess(payload));
           break;
@@ -110,8 +129,46 @@ export const WebSocketProvider: React.FC<{
     }
   };
 
+  const createGame = (payload: createGamePayload) => {
+    sendMessage("createGame", payload);
+  };
+  const joinGame = (payload: joinGamePayload) => {
+    sendMessage("joinGame", payload);
+  };
+  const spectateGame = (payload: spectateGamePayload) => {
+    sendMessage("spectateGame", payload);
+  };
+  const startGame = (payload: startGamePayload) => {
+    sendMessage("startGame", payload);
+  };
+  const leaveGame = (payload: leaveGamePayload) => {
+    sendMessage("leaveGame", payload);
+  };
+  const register = (payload: registerPayload) => {
+    sendMessage("register", payload);
+  };
+
+  const getPlayerInfo = (payload: getPlayerInfoPayload) => {
+    sendMessage("getPlayerInfo", payload);
+  };
+
+  const makeMove = (payload: makeMovePayload) => {
+    sendMessage("makeMove", payload);
+  };
+
   return (
-    <WebSocketContext.Provider value={{ sendMessage }}>
+    <WebSocketContext.Provider
+      value={{
+        createGame,
+        joinGame,
+        spectateGame,
+        startGame,
+        leaveGame,
+        register,
+        getPlayerInfo,
+        makeMove,
+      }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

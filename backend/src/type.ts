@@ -1,56 +1,56 @@
 type registerPayload = {
-  displayName: string
-  rating: number
-}
+  displayName: string;
+  rating: number;
+};
 
-type GetPlayerInfoPayload = {
-  playerToken: string
-}
+type getPlayerInfoPayload = {
+  playerToken: string;
+};
 
-type CreateGamePayload = {
-  playerToken: string
-  playWhite: boolean
-  timeLimit: number
-}
+type createGamePayload = {
+  playerToken: string;
+  playWhite: boolean;
+  timeLimit: number;
+};
 
-type JoinGamePayload = {
-  playerToken: string
-  gameId: string
-}
+type joinGamePayload = {
+  playerToken: string;
+  gameId: string;
+};
 
 type spectateGamePayload = {
-  playerToken: string
-  gameId: string
-}
+  playerToken: string;
+  gameId: string;
+};
 
 type leaveGamePayload = {
-  playerToken: string
-  gameId: string
-}
+  playerToken: string;
+  gameId: string;
+};
 
 type startGamePayload = {
-  playerToken: string
-  gameOwnerToken: string
-  gameId: string
-}
+  playerToken: string;
+  gameOwnerToken: string;
+  gameId: string;
+};
 
 type makeMovePayload = {
-  playerToken: string
-  gameId: string
+  playerToken: string;
+  gameId: string;
   move: {
-    from: string
-    to: string
-    promotion?: string
-  }
-}
+    from: string;
+    to: string;
+    promotion?: string;
+  };
+};
 
 export {
   registerPayload,
-  GetPlayerInfoPayload,
-  CreateGamePayload,
-  JoinGamePayload,
+  getPlayerInfoPayload,
+  createGamePayload,
+  joinGamePayload,
   spectateGamePayload,
   leaveGamePayload,
   startGamePayload,
   makeMovePayload,
-}
+};

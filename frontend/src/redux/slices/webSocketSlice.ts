@@ -14,7 +14,8 @@ import {
   GameInfo,
   GameDetail,
   player,
-} from "../types/webSocket";
+} from "@/types/webSocket";
+import { stat } from "fs";
 
 // 定義 Redux 狀態的型別
 type InitialState = {
@@ -58,6 +59,10 @@ const webSocketSlice = createSlice({
     ) => {
       const { playerInfo } = action.payload;
       state.playerInfo = playerInfo;
+    },
+    getPlayerInfoFailed: (state, action: PayloadAction<{}>) => {
+      sessionStorage.removeItem("playerToken");
+      window.location.reload();
     },
     createGameSuccess: (
       state,
@@ -111,6 +116,7 @@ export const {
   setWsConnected,
   registerSuccess,
   getPlayerInfoSuccess,
+  getPlayerInfoFailed,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,
