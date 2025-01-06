@@ -163,6 +163,7 @@ export default function Room() {
 
   useEffect(() => {
     const playerToken = sessionStorage.getItem("playerToken");
+    const accessToken = sessionStorage.getItem("accessToken");
 
     const handleRegister = (displayName: string, rating: number) => {
       const payload = {
@@ -174,9 +175,11 @@ export default function Room() {
 
     if (!wsConnected) return;
 
-    // 如果沒有playerToken就向ws server 註冊一個
-    if (playerToken) {
-      if (playerToken) {
+    console.log(user);
+
+    if (!playerToken) {
+      if (accessToken) {
+        if (!user) return;
         if (user) {
           handleRegister(user.displayName, user.rating);
         }
@@ -214,6 +217,7 @@ export default function Room() {
       <div className="bg-black px-[5%] pt-[100px] text-white">
         <section className="flex items-center justify-between p-4">
           <h1 className="text-3xl font-bold">Room List</h1>
+          <p>{playerInfo?.displayName}</p>
           <button
             className="bg-white text-black"
             onClick={() => {
