@@ -48,11 +48,11 @@ type makeMovePayload = {
 
 type RegisterSuccessPayload = {
   playerToken: string;
-  playerInfo: player;
+  playerInfo: Player;
 };
 
 type GetPlayerInfoSuccessPayload = {
-  playerInfo: player;
+  playerInfo: Player;
   currentGame: GameDetail;
 };
 
@@ -96,9 +96,9 @@ type GameDetailPayload = {
 type GameDetail = {
   gameId: string;
   gameOwnerToken: string;
-  white: player | null;
-  black: player | null;
-  spectators: player[];
+  white: Player | null;
+  black: Player | null;
+  spectators: Player[];
   fen: string;
   moves: string[];
   isEnd: boolean;
@@ -109,19 +109,19 @@ type GameDetail = {
   };
   gameState: "waiting" | "in-progress" | "finished";
   isWhiteTurn: boolean;
-  winner: player | null;
+  winner: Player | null;
 };
 
 type GameInfo = {
   gameId: string;
-  white: player | null;
-  black: player | null;
-  spectators: player[];
+  white: Player | null;
+  black: Player | null;
+  spectators: Player[];
   gameState: "waiting" | "in-progress" | "finished";
   timeLimit: number;
 };
 
-type player = {
+type Player = {
   id: string;
   displayName: string;
   rating: number;
@@ -149,5 +149,5 @@ export type {
   makeMovePayload,
   GameInfo,
   GameDetail,
-  player,
+  Player,
 };

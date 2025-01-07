@@ -8,6 +8,7 @@ import { useEffect, useState, useRef, use } from "react";
 import ChessGame from "@/components/ChessBoard";
 import { setIsFetching } from "@/redux/slices/webSocketSlice";
 import { toast } from "react-toastify";
+import { GameDetail, Player } from "@/types/webSocket";
 
 const GamePage = () => {
   const {
@@ -68,20 +69,18 @@ const GamePage = () => {
       return;
     }
 
-    if (!user) {
-      const payload = {
-        playerToken: playerToken,
-      };
-      getPlayerInfo(payload);
-      return;
-    }
+    if (playerInfo) return;
+
+    const payload = {
+      playerToken: playerToken,
+    };
+    getPlayerInfo(payload);
   }, [wsConnected, user]);
 
   useEffect(() => {
     if (!wsConnected) return;
     const playerToken = sessionStorage.getItem("playerToken");
     if (!playerToken) return;
-    if (!user) return;
 
     if (!currentGame) {
       const payload = {
@@ -96,17 +95,18 @@ const GamePage = () => {
   }, [wsConnected, currentGame]);
 
   return (
-    <div className="flex h-[90vh] items-center justify-center gap-4 py-4">
-      <div className="flex h-full flex-col justify-center gap-4">
-        <div className="">
-          {currentGame?.black?.id === playerInfo.id ? (
-            <p>{`${currentGame?.white?.displayName} (${currentGame?.white?.rating})`}</p>
-          ) : (
-            <p>{`${currentGame?.black?.displayName} (${currentGame?.black?.rating})`}</p>
-          )}
-        </div>
-        <div className="relative">
+    <div className="flex flex-col items-center justify-center gap-4 py-4 md:flex-row">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 md:items-start">
+        {currentGame && (
+          <PlayerText
+            currentGame={currentGame}
+            playerInfo={playerInfo}
+            role="opponent"
+          />
+        )}
+        <div className="relative h-[80vw] w-[80vw] md:h-[700px] md:w-[600px]">
           <ChessGame />
+
           <div className="absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] bg-red-700">
             {currentGame?.white && currentGame?.black ? (
               <button>Start Game</button>
@@ -115,17 +115,47 @@ const GamePage = () => {
             )}
           </div>
         </div>
-        <div className="">
-          {currentGame?.black?.id === playerInfo.id ? (
-            <p>{`${currentGame?.black?.displayName} (${currentGame?.black?.rating})`}</p>
-          ) : (
-            <p>{`${currentGame?.white?.displayName} (${currentGame?.white?.rating})`}</p>
-          )}
-        </div>
+        {currentGame && (
+          <PlayerText
+            currentGame={currentGame}
+            playerInfo={playerInfo}
+            role="self"
+          />
+        )}
       </div>
-      <div className="h-full w-[400px] rounded-xl bg-slate-200"></div>
+      <div className="h-[400px] w-[80vw] rounded-xl bg-slate-200 md:h-full md:w-[400px]"></div>
     </div>
   );
 };
 
 export default GamePage;
+
+const PlayerText = ({
+  currentGame,
+  playerInfo,
+  role,
+}: {
+  currentGame: GameDetail;
+  playerInfo: Player;
+  role: "self" | "opponent";
+}) => {
+  const getOpponent = () => {
+    if (currentGame?.black?.id === playerInfo.id) return currentGame?.white;
+    if (currentGame?.white?.id === playerInfo.id) return currentGame?.black;
+    return null;
+  };
+
+  const getSelf = () => {
+    if (currentGame?.black?.id === playerInfo.id) return currentGame?.black;
+    if (currentGame?.white?.id === playerInfo.id) return currentGame?.white;
+    return null;
+  };
+
+  const target = role === "opponent" ? getOpponent() : getSelf();
+
+  return target ? (
+    <p>{`${target?.displayName} (${target?.rating})`}</p>
+  ) : (
+    <p>{role === "opponent" ? "等待值得一戰的對手" : "你不在此局中"}</p>
+  );
+};

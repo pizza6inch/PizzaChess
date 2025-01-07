@@ -83,7 +83,7 @@ const ChessGame = () => {
   // console.log(chess.moves());
 
   return (
-    <div className="h-[700px] w-[700px]">
+    <>
       <Chessground
         contained={true}
         config={{
@@ -106,7 +106,7 @@ const ChessGame = () => {
           },
         }}
       />
-    </div>
+    </>
   );
 };
 

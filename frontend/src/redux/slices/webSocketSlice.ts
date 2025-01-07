@@ -13,13 +13,13 @@ import {
   makeMoveSuccessPayload,
   GameInfo,
   GameDetail,
-  player,
+  Player,
 } from "@/types/webSocket";
 
 // 定義 Redux 狀態的型別
 type InitialState = {
   games: GameInfo[] | null; // 通用訊息的陣列
-  playerInfo: player;
+  playerInfo: Player | null;
   gameOwnerToken: string;
   currentGame: GameDetail | null;
   wsConnected: boolean;
@@ -30,12 +30,7 @@ type InitialState = {
 const initialState: InitialState = {
   games: null,
   gameOwnerToken: "",
-  playerInfo: {
-    id: "",
-    displayName: "",
-    rating: 0,
-    isInGame: false,
-  },
+  playerInfo: null,
   currentGame: null,
   wsConnected: false,
   isfetching: false,
@@ -54,9 +49,9 @@ const webSocketSlice = createSlice({
     },
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
       const { playerToken, playerInfo } = action.payload;
-      state.playerInfo = playerInfo;
+      // state.playerInfo = playerInfo;
       sessionStorage.setItem("playerToken", playerToken);
-      state.isfetching = false;
+      // state.isfetching = false;
     },
     getPlayerInfoSuccess: (
       state,

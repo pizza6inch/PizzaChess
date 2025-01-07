@@ -194,15 +194,15 @@ export default function Room() {
         if (!user) return;
         handleRegister(user.displayName, user.rating);
       }
+      return;
     }
 
-    if (playerToken) {
-      const payload = {
-        playerToken: playerToken,
-      };
-      getPlayerInfo(payload);
-      dispatch(setIsFetching(true));
-    }
+    if (playerInfo) return;
+
+    const payload = {
+      playerToken: playerToken,
+    };
+    getPlayerInfo(payload);
   }, [wsConnected, user]);
 
   const handleCreateGame = () => {
