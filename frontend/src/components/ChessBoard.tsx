@@ -22,8 +22,6 @@ const ChessGame = () => {
 
   const router = useRouter();
 
-  console.log(currentGame?.fen);
-
   const [validDests, setValidDests] = useState(new Map());
 
   useEffect(() => {
@@ -85,7 +83,7 @@ const ChessGame = () => {
   // console.log(chess.moves());
 
   return (
-    <div className="h-[700px] w-[700px] ">
+    <div className="h-[700px] w-[700px]">
       <Chessground
         contained={true}
         config={{

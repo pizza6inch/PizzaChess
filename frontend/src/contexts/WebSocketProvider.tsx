@@ -37,6 +37,7 @@ interface WebSocketContextType {
   leaveGame: (payload: leaveGamePayload) => void;
   register: (payload: registerPayload) => void;
   getPlayerInfo: (payload: getPlayerInfoPayload) => void;
+  getAllGamesStatus: () => void;
   makeMove: (payload: makeMovePayload) => void;
 }
 
@@ -154,6 +155,9 @@ export const WebSocketProvider: React.FC<{
   const getPlayerInfo = (payload: getPlayerInfoPayload) => {
     sendMessage("getPlayerInfo", payload);
   };
+  const getAllGamesStatus = () => {
+    sendMessage("getAllGamesStatus", {});
+  };
 
   const makeMove = (payload: makeMovePayload) => {
     sendMessage("makeMove", payload);
@@ -169,6 +173,7 @@ export const WebSocketProvider: React.FC<{
         leaveGame,
         register,
         getPlayerInfo,
+        getAllGamesStatus,
         makeMove,
       }}
     >

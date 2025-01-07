@@ -108,6 +108,20 @@ const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
   }
 };
 
+const getAllGamesStatus = (ws: WebSocket, payload: {}) => {
+  const type = "allGameStatus";
+  const allGameStatus = Array.from(games.values()).map((game) =>
+    game.getGameInfo()
+  );
+
+  const response = {
+    type: type,
+    payload: { games: allGameStatus },
+  };
+
+  ws.send(JSON.stringify(response));
+};
+
 const createGame = (ws: WebSocket, payload: createGamePayload) => {
   try {
     const { playerToken, playWhite, timeLimit = 60 * 10 } = payload;
@@ -328,6 +342,8 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
     ws.send(JSON.stringify(response));
 
     broadcastAllGameStatus();
+    // 改後代確認0107
+    broadcastGameDetail(game);
   } catch (e) {
     console.log(`errorMessage: spectateGameError ${e}`);
     errorHandler(ws, e, `SpectateGame`);
@@ -474,6 +490,7 @@ const broadcastGameDetail = (game: Game) => {
 export {
   register,
   getPlayerInfo,
+  getAllGamesStatus,
   createGame,
   joinGame,
   leaveGame,

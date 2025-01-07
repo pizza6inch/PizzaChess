@@ -15,20 +15,20 @@ import {
   GameDetail,
   player,
 } from "@/types/webSocket";
-import { stat } from "fs";
 
 // 定義 Redux 狀態的型別
 type InitialState = {
-  games: GameInfo[]; // 通用訊息的陣列
+  games: GameInfo[] | null; // 通用訊息的陣列
   playerInfo: player;
   gameOwnerToken: string;
   currentGame: GameDetail | null;
   wsConnected: boolean;
+  isfetching: boolean;
 };
 
 // 定義初始狀態
 const initialState: InitialState = {
-  games: [],
+  games: null,
   gameOwnerToken: "",
   playerInfo: {
     id: "",
@@ -38,6 +38,7 @@ const initialState: InitialState = {
   },
   currentGame: null,
   wsConnected: false,
+  isfetching: false,
 };
 
 // 建立 WebSocket Slice
@@ -48,10 +49,14 @@ const webSocketSlice = createSlice({
     setWsConnected: (state, action: PayloadAction<boolean>) => {
       state.wsConnected = action.payload;
     },
+    setIsFetching: (state, action: PayloadAction<boolean>) => {
+      state.isfetching = action.payload;
+    },
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
       const { playerToken, playerInfo } = action.payload;
       state.playerInfo = playerInfo;
       sessionStorage.setItem("playerToken", playerToken);
+      state.isfetching = false;
     },
     getPlayerInfoSuccess: (
       state,
@@ -60,10 +65,12 @@ const webSocketSlice = createSlice({
       const { playerInfo, currentGame } = action.payload;
       state.playerInfo = playerInfo;
       state.currentGame = currentGame;
+      state.isfetching = false;
     },
     getPlayerInfoFailed: (state, action: PayloadAction<{}>) => {
       sessionStorage.removeItem("playerToken");
       window.location.reload(); // 重新整理頁面
+      state.isfetching = false;
     },
     createGameSuccess: (
       state,
@@ -72,10 +79,12 @@ const webSocketSlice = createSlice({
       const { gameDetail, gameOwnerToken } = action.payload;
       state.currentGame = gameDetail;
       state.gameOwnerToken = gameOwnerToken;
+      state.isfetching = false;
     },
     joinGameSuccess: (state, action: PayloadAction<JoinGameSuccessPayload>) => {
       const { gameDetail } = action.payload;
       state.currentGame = gameDetail;
+      state.isfetching = false;
     },
     spectateGameSuccess: (
       state,
@@ -83,6 +92,7 @@ const webSocketSlice = createSlice({
     ) => {
       const { gameDetail } = action.payload;
       state.currentGame = gameDetail;
+      state.isfetching = false;
     },
     startGameSuccess: (
       state,
@@ -90,16 +100,17 @@ const webSocketSlice = createSlice({
     ) => {
       const { gameDetail } = action.payload;
       state.currentGame = gameDetail;
+      state.isfetching = false;
     },
     leaveGameSuccess: (
       state,
       action: PayloadAction<leaveGameSuccessPayload>,
     ) => {
-      // const { gameId } = action.payload;
       state.currentGame = null;
+      state.isfetching = false;
     },
     makeMoveSuccess: (state, action: PayloadAction<makeMoveSuccessPayload>) => {
-      // const { gameId } = action.payload;
+      state.isfetching = false;
     },
     setAllGameStatus: (state, action: PayloadAction<AllGameStatusPayload>) => {
       const { games } = action.payload;
@@ -115,6 +126,7 @@ const webSocketSlice = createSlice({
 // 匯出 actions
 export const {
   setWsConnected,
+  setIsFetching,
   registerSuccess,
   getPlayerInfoSuccess,
   getPlayerInfoFailed,

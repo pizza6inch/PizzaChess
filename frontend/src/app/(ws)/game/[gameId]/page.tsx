@@ -3,12 +3,20 @@ import { useRouter, usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 
 import ChessGame from "@/components/ChessBoard";
+import { setIsFetching } from "@/redux/slices/webSocketSlice";
+import { toast } from "react-toastify";
 
 const GamePage = () => {
-  const { spectateGame, leaveGame, register, getPlayerInfo } = useWebSocket();
+  const {
+    spectateGame,
+    leaveGame,
+    register,
+    getPlayerInfo,
+    getAllGamesStatus,
+  } = useWebSocket();
 
   const { gameOwnerToken, games, playerInfo, currentGame, wsConnected } =
     useSelector((state: RootState) => state.websocket);
@@ -18,38 +26,24 @@ const GamePage = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [gameId, setGameId] = useState("");
-  const [playerToken, setPlayerToken] = useState("");
-
-  useEffect(() => {
-    setGameId(pathname.split("/")[2]);
-  }, [pathname]);
+  const gameId = pathname.split("/")[2];
 
   useEffect(() => {
     if (!wsConnected) return;
-    const playerToken = sessionStorage.getItem("playerToken");
 
-    if (!playerToken) return;
-
-    if (!currentGame) {
-      const payload = {
-        playerToken: playerToken,
-        gameId: gameId,
-      };
-      spectateGame(payload);
+    if (!games) {
+      getAllGamesStatus();
       return;
     }
-
-    if (currentGame.gameId !== gameId) {
-      const newPayload = {
-        playerToken: playerToken,
-        gameId: gameId,
-      };
-      spectateGame(newPayload);
+    if (!games?.find((game) => game.gameId === gameId)) {
+      router.push("/room");
+      toast.error("Game not found");
     }
-  }, [wsConnected, currentGame, router]);
+  }, [wsConnected, games]);
 
   useEffect(() => {
+    if (!wsConnected) return;
+
     const playerToken = sessionStorage.getItem("playerToken");
     const accessToken = sessionStorage.getItem("accessToken");
 
@@ -61,29 +55,45 @@ const GamePage = () => {
       register(payload);
     };
 
-    if (!wsConnected) return;
-
-    // 如果沒有playerToken就向ws server 註冊一個
     if (!playerToken) {
-      if (accessToken) {
-        if (user) {
-          handleRegister(user.displayName, user.rating);
-        }
-      } else {
+      if (!accessToken) {
         // generate random string as display name
         const randomName = Math.random().toString(36).substring(2, 6);
         handleRegister(`${randomName}_guest`, 1200);
       }
-      window.location.reload();
+      if (accessToken) {
+        if (!user) return;
+        handleRegister(user.displayName, user.rating);
+      }
+      return;
     }
 
-    if (playerToken) {
+    if (!user) {
       const payload = {
         playerToken: playerToken,
       };
       getPlayerInfo(payload);
+      return;
     }
   }, [wsConnected, user]);
+
+  useEffect(() => {
+    if (!wsConnected) return;
+    const playerToken = sessionStorage.getItem("playerToken");
+    if (!playerToken) return;
+    if (!user) return;
+
+    if (!currentGame) {
+      const payload = {
+        playerToken: playerToken,
+        gameId: gameId,
+      };
+      spectateGame(payload);
+    }
+    if (currentGame && currentGame.gameId !== gameId) {
+      router.push(`/game/${currentGame.gameId}`);
+    }
+  }, [wsConnected, currentGame]);
 
   return (
     <div className="flex h-[90vh] items-center justify-center gap-4 py-4">

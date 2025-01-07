@@ -3,7 +3,7 @@
 import "@/app/global.css";
 import React, { useState, useEffect } from "react";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "react-toastify";
+import { setIsFetching } from "@/redux/slices/webSocketSlice";
 
 type status = "ALL" | "In-Game" | "Available";
 
@@ -33,8 +34,16 @@ export default function Room() {
 
   const router = useRouter();
 
-  const { wsConnected, gameOwnerToken, games, playerInfo, currentGame } =
-    useSelector((state: RootState) => state.websocket);
+  const dispatch = useDispatch();
+
+  const {
+    wsConnected,
+    gameOwnerToken,
+    games,
+    playerInfo,
+    currentGame,
+    isfetching,
+  } = useSelector((state: RootState) => state.websocket);
 
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -162,6 +171,8 @@ export default function Room() {
   }, [wsConnected, currentGame, router]);
 
   useEffect(() => {
+    if (!wsConnected) return;
+
     const playerToken = sessionStorage.getItem("playerToken");
     const accessToken = sessionStorage.getItem("accessToken");
 
@@ -172,10 +183,6 @@ export default function Room() {
       };
       register(payload);
     };
-
-    if (!wsConnected) return;
-
-    console.log(user);
 
     if (!playerToken) {
       if (!accessToken) {
@@ -194,6 +201,7 @@ export default function Room() {
         playerToken: playerToken,
       };
       getPlayerInfo(payload);
+      dispatch(setIsFetching(true));
     }
   }, [wsConnected, user]);
 
@@ -224,7 +232,9 @@ export default function Room() {
         >
           clear sessionStorage
         </button>
-        <p className="text-2xl font-semibold">{`${games.length} Games`}</p>
+        {games && (
+          <p className="text-2xl font-semibold">{`${games.length} Games`}</p>
+        )}
       </section>
       {/* <p>{playerInfo.displayName}</p> */}
       <section className="items-between flex flex-col justify-end gap-4 border-b-2 border-white p-4">
@@ -318,8 +328,9 @@ const GameList = ({
   status: status;
   sortBy: sortBy;
   sortOrder: sortOrder;
-  games: GameInfo[];
+  games: GameInfo[] | null;
 }) => {
+  if (!games) return null;
   const filteredGames = games.filter((game) => {
     if (status === "In-Game") return game.gameState === "in-progress";
     if (status === "Available") return game.gameState === "waiting";
