@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  cg-board {
+    @apply !cursor-default;
+  }
+}
+
 .bg-hero {
   background: linear-gradient(to right, #000000, #442a2d, #442a2d);
 }

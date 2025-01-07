@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 const RoomCard = ({ game }: { game: GameInfo }) => {
-  const { joinGame } = useWebSocket();
+  const { joinGame, spectateGame } = useWebSocket();
 
   const handleJoinGame = () => {
     const playerToken = sessionStorage.getItem("playerToken");
@@ -25,7 +25,19 @@ const RoomCard = ({ game }: { game: GameInfo }) => {
   };
 
   const handleSpectateGame = () => {
-    console.log("spectate logic");
+    const playerToken = sessionStorage.getItem("playerToken");
+
+    if (playerToken === null) {
+      toast.error("Please login first!");
+      return;
+    }
+
+    const payload = {
+      playerToken: playerToken,
+      gameId: game.gameId,
+    };
+
+    spectateGame(payload);
   };
 
   return (

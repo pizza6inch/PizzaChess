@@ -69,7 +69,15 @@ const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
     const user = users.get(playerToken);
 
     if (!user) {
-      throw new Error("invalid playerToken");
+      const response = {
+        type: "getPlayerInfoFailed",
+        payload: {
+          errorMessage: "invalid playerToken",
+        },
+      };
+
+      ws.send(JSON.stringify(response));
+      return;
     }
 
     if (!WebSockets.includes(ws)) {
@@ -78,11 +86,16 @@ const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
     }
 
     // send back to ws
+    // find the game that the user is in
+    const userGame = Array.from(games.values()).find((game) =>
+      game.isPlayerInGame(user)
+    );
 
     const response = {
       type: "getPlayerInfoSuccess",
       payload: {
         playerInfo: user.getInfo(),
+        currentGame: userGame?.getGameDetail(),
       },
     };
 
@@ -90,8 +103,8 @@ const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
 
     broadcastAllGameStatus();
   } catch (e) {
-    console.log(`errorMessage: getUserInfoSuccess error ${e}`);
-    errorHandler(ws, e, `getUserInfoSuccess`);
+    console.log(`errorMessage: getUserInfo error ${e}`);
+    errorHandler(ws, e, `getUserInfoError`);
   }
 };
 
@@ -165,7 +178,9 @@ const joinGame = (ws: WebSocket, payload: joinGamePayload) => {
     }
 
     // const game = games.find((game) => game.gameId === gameId);
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -218,7 +233,9 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -233,7 +250,10 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
     console.log(games);
     console.log(game.getGameOwnerToken());
 
-    if (game.getGameDetail().gameState === "finished" || (game.white === null && game.black === null)) {
+    if (
+      game.getGameDetail().gameState === "finished" ||
+      (game.white === null && game.black === null)
+    ) {
       games.delete(game.getGameOwnerToken());
     }
     // console.log(games);
@@ -271,12 +291,9 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
       WebSockets.push(ws);
     }
 
-    // check if the user is already in a game
-    if (user.isInGame) {
-      throw new Error("user already in a game");
-    }
-
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -284,6 +301,15 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
 
     if (game.isPlayerInGame(user)) {
       throw new Error("user is already in the game");
+    }
+
+    // check if the user is already in other game
+    if (user.isInGame) {
+      // find the game that the user is in
+      const userGame = Array.from(games.values()).find((game) =>
+        game.isPlayerInGame(user)
+      );
+      userGame?.leaveGame(user);
     }
 
     game.addPlayer(user, "spectator");
@@ -366,7 +392,9 @@ const makeMove = (ws: WebSocket, payload: makeMovePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -407,7 +435,9 @@ const generateToken = (id: string, dependency: string) => {
 
 const broadcastAllGameStatus = () => {
   const type = "allGameStatus";
-  const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
+  const allGameStatus = Array.from(games.values()).map((game) =>
+    game.getGameInfo()
+  );
 
   const response = {
     type: type,

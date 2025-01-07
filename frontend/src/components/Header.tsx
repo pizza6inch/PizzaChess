@@ -104,7 +104,7 @@ const Header = () => {
         if (response.success && response.user) {
           dispatch(setUser(response.user));
         } else {
-          // console.error('Failed to get user info:')
+          console.error("Failed to get user info:");
         }
       }
     };

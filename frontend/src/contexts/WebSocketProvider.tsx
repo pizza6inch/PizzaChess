@@ -7,6 +7,7 @@ import { setWsConnected } from "@/redux/slices/webSocketSlice";
 import {
   registerSuccess,
   getPlayerInfoSuccess,
+  getPlayerInfoFailed,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,
@@ -70,7 +71,9 @@ export const WebSocketProvider: React.FC<{
         case "getPlayerInfoSuccess":
           dispatch(getPlayerInfoSuccess(payload));
           break;
-        // TODO:: 新增一個getPlayerInfoFailed 後端多寫一個error type
+        case "getPlayerInfoFailed": // 過期或是錯誤playerToken
+          dispatch(getPlayerInfoFailed(payload));
+          break;
         case "createGameSuccess":
           dispatch(createGameSuccess(payload));
           break;
@@ -94,7 +97,7 @@ export const WebSocketProvider: React.FC<{
           break;
       }
       if (type === "error") {
-        toast.success(`${payload.errorType}: ${payload.error}`);
+        toast.error(`${payload.errorType}: ${payload.error}`);
       } else if (type !== "allGameStatus" && type !== "gameDetail") {
         toast.success(`${type}`);
       }

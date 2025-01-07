@@ -57,12 +57,13 @@ const webSocketSlice = createSlice({
       state,
       action: PayloadAction<GetPlayerInfoSuccessPayload>,
     ) => {
-      const { playerInfo } = action.payload;
+      const { playerInfo, currentGame } = action.payload;
       state.playerInfo = playerInfo;
+      state.currentGame = currentGame;
     },
     getPlayerInfoFailed: (state, action: PayloadAction<{}>) => {
       sessionStorage.removeItem("playerToken");
-      window.location.reload();
+      window.location.reload(); // 重新整理頁面
     },
     createGameSuccess: (
       state,

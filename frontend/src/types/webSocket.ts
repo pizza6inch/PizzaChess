@@ -53,6 +53,7 @@ type RegisterSuccessPayload = {
 
 type GetPlayerInfoSuccessPayload = {
   playerInfo: player;
+  currentGame: GameDetail;
 };
 
 type CreateGameSuccessPayload = {

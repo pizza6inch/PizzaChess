@@ -11,6 +11,7 @@ import "chessground/assets/chessground.cburnett.css";
 import { useSelector } from "react-redux";
 import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { useRouter, usePathname } from "next/navigation";
+import { toast } from "react-toastify";
 
 const ChessGame = () => {
   const { makeMove } = useWebSocket();
@@ -26,7 +27,7 @@ const ChessGame = () => {
   const [validDests, setValidDests] = useState(new Map());
 
   useEffect(() => {
-    console.log("currentGame", currentGame);
+    // console.log("currentGame", currentGame);
   }, [currentGame]);
 
   const afterHandler = (orig: string, dest: string) => {
@@ -41,6 +42,7 @@ const ChessGame = () => {
       router.push("/room");
       return;
     }
+
     const payload = {
       playerToken: playerToken,
       gameId: currentGame.gameId,
@@ -50,6 +52,15 @@ const ChessGame = () => {
   };
 
   const onSelect = (key: string) => {
+    if (currentGame === null) {
+      return;
+    }
+
+    if (currentGame.gameState !== "in-progress") {
+      setValidDests(new Map());
+      return;
+    }
+
     if (
       currentGame?.isWhiteTurn === true &&
       playerInfo?.id !== currentGame?.white?.id
@@ -74,27 +85,30 @@ const ChessGame = () => {
   // console.log(chess.moves());
 
   return (
-    <Chessground
-      config={{
-        fen: currentGame?.fen,
-        orientation:
-          currentGame?.black?.id === playerInfo?.id ? "black" : "white", // 觀察者 & 白棋是白方視角
-        movable: {
-          free: false,
-          // color: currentGame?.isWhiteTurn ? "white" : "black",
-          dests: validDests,
-          events: {
-            after: afterHandler,
+    <div className="h-[700px] w-[700px] ">
+      <Chessground
+        contained={true}
+        config={{
+          fen: currentGame?.fen,
+          orientation:
+            currentGame?.black?.id === playerInfo?.id ? "black" : "white", // 觀察者 & 白棋是白方視角
+          movable: {
+            free: false,
+            // color: currentGame?.isWhiteTurn ? "white" : "black",
+            dests: validDests,
+            events: {
+              after: afterHandler,
+            },
           },
-        },
-        events: {
-          // move: (from, to) => {
-          //   console.log(from, to);
-          // },
-          select: onSelect,
-        },
-      }}
-    />
+          events: {
+            // move: (from, to) => {
+            //   console.log(from, to);
+            // },
+            select: onSelect,
+          },
+        }}
+      />
+    </div>
   );
 };
 
