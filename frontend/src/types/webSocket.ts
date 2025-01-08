@@ -1,42 +1,44 @@
-import { Chess } from "chess.js";
-
-type registerPayload = {
+type RegisterPayload = {
   displayName: string;
   rating: number;
 };
 
-type getPlayerInfoPayload = {
+type LoginPayload = {
   playerToken: string;
 };
 
-type createGamePayload = {
+type GetPlayerInfoPayload = {
+  playerToken: string;
+};
+
+type CreateGamePayload = {
   playerToken: string;
   playWhite: boolean;
   timeLimit: number;
 };
 
-type joinGamePayload = {
+type JoinGamePayload = {
   playerToken: string;
   gameId: string;
 };
 
-type spectateGamePayload = {
+type SpectateGamePayload = {
   playerToken: string;
   gameId: string;
 };
 
-type leaveGamePayload = {
+type LeaveGamePayload = {
   playerToken: string;
   gameId: string;
 };
 
-type startGamePayload = {
+type StartGamePayload = {
   playerToken: string;
   gameOwnerToken: string;
   gameId: string;
 };
 
-type makeMovePayload = {
+type MakeMovePayload = {
   playerToken: string;
   gameId: string;
   move: {
@@ -51,9 +53,10 @@ type RegisterSuccessPayload = {
   playerInfo: Player;
 };
 
-type GetPlayerInfoSuccessPayload = {
+type LoginSuccessPayload = {
   playerInfo: Player;
-  currentGame: GameDetail;
+  currentGame: GameDetail | null;
+  games: GameInfo[];
 };
 
 type CreateGameSuccessPayload = {
@@ -77,11 +80,11 @@ type StartGameSuccessPayload = {
   gameDetail: GameDetail;
 };
 
-type leaveGameSuccessPayload = {
+type LeaveGameSuccessPayload = {
   gameId: string;
 };
 
-type makeMoveSuccessPayload = {
+type MakeMoveSuccessPayload = {
   gameId: string;
 };
 
@@ -132,21 +135,22 @@ export type {
   GameDetailPayload,
   AllGameStatusPayload,
   RegisterSuccessPayload,
-  GetPlayerInfoSuccessPayload,
+  LoginSuccessPayload,
   CreateGameSuccessPayload,
   JoinGameSuccessPayload,
   SpectateGameSuccessPayload,
   StartGameSuccessPayload,
-  leaveGameSuccessPayload,
-  makeMoveSuccessPayload,
-  registerPayload,
-  getPlayerInfoPayload,
-  createGamePayload,
-  joinGamePayload,
-  spectateGamePayload,
-  leaveGamePayload,
-  startGamePayload,
-  makeMovePayload,
+  LeaveGameSuccessPayload,
+  MakeMoveSuccessPayload,
+  RegisterPayload,
+  LoginPayload,
+  GetPlayerInfoPayload,
+  CreateGamePayload,
+  JoinGamePayload,
+  SpectateGamePayload,
+  LeaveGamePayload,
+  StartGamePayload,
+  MakeMovePayload,
   GameInfo,
   GameDetail,
   Player,

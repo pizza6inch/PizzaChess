@@ -1,40 +1,40 @@
-type registerPayload = {
+type RegisterPayload = {
   displayName: string;
   rating: number;
 };
 
-type getPlayerInfoPayload = {
+type LoginPayload = {
   playerToken: string;
 };
 
-type createGamePayload = {
+type CreateGamePayload = {
   playerToken: string;
   playWhite: boolean;
   timeLimit: number;
 };
 
-type joinGamePayload = {
+type JoinGamePayload = {
   playerToken: string;
   gameId: string;
 };
 
-type spectateGamePayload = {
+type SpectateGamePayload = {
   playerToken: string;
   gameId: string;
 };
 
-type leaveGamePayload = {
+type LeaveGamePayload = {
   playerToken: string;
   gameId: string;
 };
 
-type startGamePayload = {
+type StartGamePayload = {
   playerToken: string;
   gameOwnerToken: string;
   gameId: string;
 };
 
-type makeMovePayload = {
+type MakeMovePayload = {
   playerToken: string;
   gameId: string;
   move: {
@@ -45,12 +45,12 @@ type makeMovePayload = {
 };
 
 export {
-  registerPayload,
-  getPlayerInfoPayload,
-  createGamePayload,
-  joinGamePayload,
-  spectateGamePayload,
-  leaveGamePayload,
-  startGamePayload,
-  makeMovePayload,
+  RegisterPayload,
+  LoginPayload,
+  CreateGamePayload,
+  JoinGamePayload,
+  SpectateGamePayload,
+  LeaveGamePayload,
+  StartGamePayload,
+  MakeMovePayload,
 };

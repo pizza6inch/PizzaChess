@@ -1,21 +1,21 @@
 import {
-  registerPayload,
-  getPlayerInfoPayload,
-  createGamePayload,
-  joinGamePayload,
-  leaveGamePayload,
-  spectateGamePayload,
-  startGamePayload,
-  makeMovePayload,
-} from "../type";
-import { errorHandler } from "../handler";
+  RegisterPayload,
+  LoginPayload,
+  CreateGamePayload,
+  JoinGamePayload,
+  LeaveGamePayload,
+  SpectateGamePayload,
+  StartGamePayload,
+  MakeMovePayload,
+} from "./type";
+import { errorHandler } from "./handler";
 
 const jwt = require("jsonwebtoken");
 
-import { WebSocket, RawData } from "ws";
+import { WebSocket } from "ws";
 
-import { Game } from "../Game";
-import { User } from "../User";
+import { Game } from "./Game";
+import { User } from "./User";
 
 const games = new Map<string, Game>(); // key: gameOwnerToken, value: Game
 const users = new Map<string, User>(); // key: playerToken, value: User
@@ -23,7 +23,7 @@ const WebSockets: WebSocket[] = [];
 let userCount = 0;
 let gameCount = 0;
 
-const register = (ws: WebSocket, payload: registerPayload) => {
+const register = (ws: WebSocket, payload: RegisterPayload) => {
   try {
     const { displayName, rating } = payload;
 
@@ -44,7 +44,7 @@ const register = (ws: WebSocket, payload: registerPayload) => {
     // send back to ws
 
     const response = {
-      type: "registerSuccess",
+      type: "REGISTER_SUCCESS",
       payload: {
         playerToken,
         playerInfo: user.getInfo(),
@@ -57,13 +57,13 @@ const register = (ws: WebSocket, payload: registerPayload) => {
 
     broadcastAllGameStatus();
   } catch (e) {
-    console.log(`errorMessage: register error ${e}`);
-    errorHandler(ws, e, `register`);
+    console.log(`errorMessage: REGISTER_ERROR ${e}`);
+    errorHandler(ws, e, `REGISTER`);
   }
 };
 
 // 當斷線重連時 用playerToken重新加入ws
-const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
+const login = (ws: WebSocket, payload: LoginPayload) => {
   try {
     const { playerToken } = payload;
 
@@ -71,7 +71,7 @@ const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
 
     if (!user) {
       const response = {
-        type: "getPlayerInfoFailed",
+        type: "LOGIN_FAILED",
         payload: {
           errorMessage: "invalid playerToken",
         },
@@ -89,37 +89,25 @@ const getPlayerInfo = (ws: WebSocket, payload: getPlayerInfoPayload) => {
     // send back to ws
     // find the game that the user is in
     const userGame = Array.from(games.values()).find((game) => game.isPlayerInGame(user));
+    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
 
     const response = {
-      type: "getPlayerInfoSuccess",
+      type: "LOGIN_SUCCESS",
       payload: {
         playerInfo: user.getInfo(),
         currentGame: userGame?.getGameDetail(),
+        allGameStatus: allGameStatus,
       },
     };
 
     ws.send(JSON.stringify(response));
-
-    broadcastAllGameStatus();
   } catch (e) {
-    console.log(`errorMessage: getUserInfo error ${e}`);
-    errorHandler(ws, e, `getUserInfoError`);
+    console.log(`errorMessage: LOGIN_FAILED ${e}`);
+    errorHandler(ws, e, `LOGIN`);
   }
 };
 
-const getAllGamesStatus = (ws: WebSocket, payload: {}) => {
-  const type = "allGameStatus";
-  const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
-
-  const response = {
-    type: type,
-    payload: { games: allGameStatus },
-  };
-
-  ws.send(JSON.stringify(response));
-};
-
-const createGame = (ws: WebSocket, payload: createGamePayload) => {
+const createGame = (ws: WebSocket, payload: CreateGamePayload) => {
   try {
     const { playerToken, playWhite, timeLimit = 60 * 10 } = payload;
     const user = users.get(playerToken);
@@ -151,7 +139,7 @@ const createGame = (ws: WebSocket, payload: createGamePayload) => {
     games.set(gameOwnerToken, game);
 
     const response = {
-      type: "createGameSuccess",
+      type: "CREATE_GAME_SUCCESS",
       payload: {
         gameId,
         gameDetail: game.getGameDetail(),
@@ -164,12 +152,12 @@ const createGame = (ws: WebSocket, payload: createGamePayload) => {
 
     broadcastAllGameStatus();
   } catch (e) {
-    console.log(`errorMessage: createGameError ${e}`);
-    errorHandler(ws, e, `CreateGame`);
+    console.log(`errorMessage: CREATE_GAME_FAILED ${e}`);
+    errorHandler(ws, e, `CREATE_GAME`);
   }
 };
 
-const joinGame = (ws: WebSocket, payload: joinGamePayload) => {
+const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
   try {
     const { playerToken, gameId } = payload;
     const user = users.get(playerToken);
@@ -212,23 +200,22 @@ const joinGame = (ws: WebSocket, payload: joinGamePayload) => {
     user.isInGame = true;
 
     const response = {
-      type: "joinGameSuccess",
+      type: "JOIN_GAME_SUCCESS",
       payload: {
         gameId,
         gameDetail: game.getGameDetail(),
       },
     };
     ws.send(JSON.stringify(response));
-    // console.log(JSON.stringify(response));
 
     broadcastAllGameStatus();
   } catch (e) {
-    console.log(`errorMessage: joinGameError ${e}`);
-    errorHandler(ws, e, `JoinGame`);
+    console.log(`errorMessage: JOIN_GAME_ERROR ${e}`);
+    errorHandler(ws, e, `JOIN_GAME`);
   }
 };
 
-const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
+const leaveGame = (ws: WebSocket, payload: LeaveGamePayload) => {
   try {
     const { playerToken, gameId } = payload;
     const user = users.get(playerToken);
@@ -265,7 +252,7 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
     user.isInGame = false;
 
     const response = {
-      type: "leaveGameSuccess",
+      type: "LEAVE_GAME_SUCCESS",
       payload: {
         gameId,
       },
@@ -276,12 +263,12 @@ const leaveGame = (ws: WebSocket, payload: leaveGamePayload) => {
 
     broadcastAllGameStatus();
   } catch (e) {
-    console.log(`errorMessage: leaveGameError ${e}`);
-    errorHandler(ws, e, `LeaveGame`);
+    console.log(`errorMessage: LEAVE_GAME_ERROR ${e}`);
+    errorHandler(ws, e, `LEAVE_GAME`);
   }
 };
 
-const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
+const spectateGame = (ws: WebSocket, payload: SpectateGamePayload) => {
   try {
     const { playerToken, gameId } = payload;
     const user = users.get(playerToken);
@@ -317,7 +304,7 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
     user.isInGame = true;
 
     const response = {
-      type: "spectateGameSuccess",
+      type: "SPECTATE_GAME_SUCCESS",
       payload: {
         gameId,
         gameDetail: game.getGameDetail(),
@@ -331,12 +318,12 @@ const spectateGame = (ws: WebSocket, payload: spectateGamePayload) => {
     // 改後代確認0107
     broadcastGameDetail(game);
   } catch (e) {
-    console.log(`errorMessage: spectateGameError ${e}`);
-    errorHandler(ws, e, `SpectateGame`);
+    console.log(`errorMessage: SPECTATE_GAME_ERROR ${e}`);
+    errorHandler(ws, e, `SPECTATE_GAME`);
   }
 };
 
-const startGame = (ws: WebSocket, payload: startGamePayload) => {
+const startGame = (ws: WebSocket, payload: StartGamePayload) => {
   try {
     const { playerToken, gameOwnerToken, gameId } = payload;
 
@@ -361,7 +348,7 @@ const startGame = (ws: WebSocket, payload: startGamePayload) => {
     game.startGame();
 
     const response = {
-      type: "startGameSuccess",
+      type: "START_GAME_SUCCESS",
       payload: {
         gameId,
         game: game.getGameDetail(),
@@ -374,12 +361,12 @@ const startGame = (ws: WebSocket, payload: startGamePayload) => {
 
     broadcastGameDetail(game);
   } catch (e) {
-    console.log(`errorMessage: startGameError ${e}`);
-    errorHandler(ws, e, `StartGame`);
+    console.log(`errorMessage: START_GAME_ERROR ${e}`);
+    errorHandler(ws, e, `START_GAME`);
   }
 };
 
-const makeMove = (ws: WebSocket, payload: makeMovePayload) => {
+const makeMove = (ws: WebSocket, payload: MakeMovePayload) => {
   try {
     const { playerToken, gameId, move } = payload;
 
@@ -408,8 +395,8 @@ const makeMove = (ws: WebSocket, payload: makeMovePayload) => {
       games.delete(game.getGameOwnerToken());
     }
   } catch (e) {
-    console.log(`errorMessage: makeMoveError ${e}`);
-    errorHandler(ws, e, `MakeMove`);
+    console.log(`errorMessage: MAKE_MOVE_ERROR ${e}`);
+    errorHandler(ws, e, `MAKE_MOVE`);
   }
 };
 const handleDisconnect = (ws: WebSocket) => {
@@ -434,7 +421,7 @@ const generateToken = (id: string, dependency: string) => {
 };
 
 const broadcastAllGameStatus = () => {
-  const type = "allGameStatus";
+  const type = "ALL_GAME_STATUS";
   const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
 
   const response = {
@@ -450,7 +437,7 @@ const broadcastAllGameStatus = () => {
 
 const broadcastGameDetail = (game: Game) => {
   const response = {
-    type: "gameDetail",
+    type: "GAME_DETAIL",
     payload: {
       game: game.getGameDetail(),
     },
@@ -469,15 +456,4 @@ const broadcastGameDetail = (game: Game) => {
   console.log(`broadcastGameDetail: `);
 };
 
-export {
-  register,
-  getPlayerInfo,
-  getAllGamesStatus,
-  createGame,
-  joinGame,
-  leaveGame,
-  spectateGame,
-  startGame,
-  makeMove,
-  handleDisconnect,
-};
+export { register, login, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect };

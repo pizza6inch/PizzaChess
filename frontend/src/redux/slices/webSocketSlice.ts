@@ -4,13 +4,13 @@ import {
   GameDetailPayload,
   AllGameStatusPayload,
   RegisterSuccessPayload,
-  GetPlayerInfoSuccessPayload,
+  LoginSuccessPayload,
   CreateGameSuccessPayload,
   JoinGameSuccessPayload,
   SpectateGameSuccessPayload,
   StartGameSuccessPayload,
-  leaveGameSuccessPayload,
-  makeMoveSuccessPayload,
+  LeaveGameSuccessPayload,
+  MakeMoveSuccessPayload,
   GameInfo,
   GameDetail,
   Player,
@@ -53,16 +53,13 @@ const webSocketSlice = createSlice({
       sessionStorage.setItem("playerToken", playerToken);
       // state.isfetching = false;
     },
-    getPlayerInfoSuccess: (
-      state,
-      action: PayloadAction<GetPlayerInfoSuccessPayload>,
-    ) => {
+    loginSuccess: (state, action: PayloadAction<LoginSuccessPayload>) => {
       const { playerInfo, currentGame } = action.payload;
       state.playerInfo = playerInfo;
       state.currentGame = currentGame;
       state.isfetching = false;
     },
-    getPlayerInfoFailed: (state, action: PayloadAction<{}>) => {
+    loginFailed: (state, action: PayloadAction<{}>) => {
       sessionStorage.removeItem("playerToken");
       window.location.reload(); // 重新整理頁面
       state.isfetching = false;
@@ -99,12 +96,12 @@ const webSocketSlice = createSlice({
     },
     leaveGameSuccess: (
       state,
-      action: PayloadAction<leaveGameSuccessPayload>,
+      action: PayloadAction<LeaveGameSuccessPayload>,
     ) => {
       state.currentGame = null;
       state.isfetching = false;
     },
-    makeMoveSuccess: (state, action: PayloadAction<makeMoveSuccessPayload>) => {
+    makeMoveSuccess: (state, action: PayloadAction<MakeMoveSuccessPayload>) => {
       state.isfetching = false;
     },
     setAllGameStatus: (state, action: PayloadAction<AllGameStatusPayload>) => {
@@ -123,7 +120,7 @@ export const {
   setWsConnected,
   setIsFetching,
   registerSuccess,
-  getPlayerInfoSuccess,
+  loginSuccess,
   getPlayerInfoFailed,
   createGameSuccess,
   joinGameSuccess,

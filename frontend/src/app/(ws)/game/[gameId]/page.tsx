@@ -74,6 +74,8 @@ const GamePage = () => {
     const payload = {
       playerToken: playerToken,
     };
+    console.log(playerInfo);
+
     getPlayerInfo(payload);
   }, [wsConnected, user]);
 
@@ -81,23 +83,26 @@ const GamePage = () => {
     if (!wsConnected) return;
     const playerToken = sessionStorage.getItem("playerToken");
     if (!playerToken) return;
+    if (!playerInfo) return;
 
     if (!currentGame) {
       const payload = {
         playerToken: playerToken,
         gameId: gameId,
       };
+      console.log(currentGame);
+
       spectateGame(payload);
     }
-    if (currentGame && currentGame.gameId !== gameId) {
-      router.push(`/game/${currentGame.gameId}`);
-    }
+    // if (currentGame && currentGame.gameId !== gameId) {
+    //   router.push(`/game/${currentGame.gameId}`);
+    // }
   }, [wsConnected, currentGame]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-4 md:flex-row">
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 md:items-start">
-        {currentGame && (
+        {currentGame && playerInfo && (
           <PlayerText
             currentGame={currentGame}
             playerInfo={playerInfo}
@@ -115,7 +120,7 @@ const GamePage = () => {
             )}
           </div>
         </div>
-        {currentGame && (
+        {currentGame && playerInfo && (
           <PlayerText
             currentGame={currentGame}
             playerInfo={playerInfo}

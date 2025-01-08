@@ -1,46 +1,33 @@
 import { WebSocket, RawData } from "ws";
 
-import {
-  register,
-  getPlayerInfo,
-  getAllGamesStatus,
-  createGame,
-  joinGame,
-  startGame,
-  leaveGame,
-  spectateGame,
-  makeMove,
-} from "./controllers/controller";
+import { register, createGame, joinGame, startGame, leaveGame, spectateGame, makeMove, login } from "./controller";
 
 export const messageHandler = (ws: WebSocket, data: RawData) => {
   try {
     const { type, payload } = JSON.parse(data.toString());
     switch (type) {
-      case "register":
+      case "REGISTER":
         register(ws, payload);
         break;
-      case "getPlayerInfo":
-        getPlayerInfo(ws, payload);
+      case "LOGIN":
+        login(ws, payload);
         break;
-      case "getAllGamesStatus":
-        getAllGamesStatus(ws, payload);
-        break;
-      case "createGame":
+      case "CREATE_GAME":
         createGame(ws, payload);
         break;
-      case "joinGame":
+      case "JOIN_GAME":
         joinGame(ws, payload);
         break;
-      case "startGame":
+      case "START_GAME":
         startGame(ws, payload);
         break;
-      case "leaveGame":
+      case "LEAVE_GAME":
         leaveGame(ws, payload);
         break;
-      case "spectateGame":
+      case "SPECTATE_GAME":
         spectateGame(ws, payload);
         break;
-      case "makeMove":
+      case "MAKE_MOVE":
         makeMove(ws, payload);
         break;
       default:
@@ -56,7 +43,7 @@ export const errorHandler = (ws: WebSocket, e: any, errorType: string) => {
   const error = `${e instanceof Error ? e.message : e.toString()}`;
 
   const response = {
-    type: "error",
+    type: "ERROR",
     payload: { errorType, error },
   };
 

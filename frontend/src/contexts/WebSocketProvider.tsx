@@ -6,8 +6,7 @@ import { useDispatch } from "react-redux";
 import { setWsConnected } from "@/redux/slices/webSocketSlice";
 import {
   registerSuccess,
-  getPlayerInfoSuccess,
-  getPlayerInfoFailed,
+  loginSuccess,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,
@@ -18,27 +17,26 @@ import {
 } from "@/redux/slices/webSocketSlice";
 
 import {
-  createGamePayload,
-  joinGamePayload,
-  spectateGamePayload,
-  startGamePayload,
-  leaveGamePayload,
-  registerPayload,
-  getPlayerInfoPayload,
-  makeMovePayload,
+  CreateGamePayload,
+  JoinGamePayload,
+  SpectateGamePayload,
+  StartGamePayload,
+  LeaveGamePayload,
+  RegisterPayload,
+  LoginPayload,
+  MakeMovePayload,
 } from "@/types/webSocket";
 
 // 定義 Context 類型
 interface WebSocketContextType {
-  createGame: (payload: createGamePayload) => void;
-  joinGame: (payload: joinGamePayload) => void;
-  spectateGame: (payload: spectateGamePayload) => void;
-  startGame: (payload: startGamePayload) => void;
-  leaveGame: (payload: leaveGamePayload) => void;
-  register: (payload: registerPayload) => void;
-  getPlayerInfo: (payload: getPlayerInfoPayload) => void;
-  getAllGamesStatus: () => void;
-  makeMove: (payload: makeMovePayload) => void;
+  createGame: (payload: CreateGamePayload) => void;
+  joinGame: (payload: JoinGamePayload) => void;
+  spectateGame: (payload: SpectateGamePayload) => void;
+  startGame: (payload: StartGamePayload) => void;
+  leaveGame: (payload: LeaveGamePayload) => void;
+  register: (payload: RegisterPayload) => void;
+  login: (payload: LoginPayload) => void;
+  makeMove: (payload: MakeMovePayload) => void;
 }
 
 // 建立 Context
@@ -66,43 +64,40 @@ export const WebSocketProvider: React.FC<{
 
       // 根據數據類型分流到 Redux
       switch (type) {
-        case "registerSuccess":
+        case "REGISTER_SUCCESS":
           dispatch(registerSuccess(payload));
           break;
-        case "getPlayerInfoSuccess":
-          dispatch(getPlayerInfoSuccess(payload));
+        case "LOGIN_SUCCESS":
+          dispatch(loginSuccess(payload));
           break;
-        case "getPlayerInfoFailed": // 過期或是錯誤playerToken
-          dispatch(getPlayerInfoFailed(payload));
-          break;
-        case "createGameSuccess":
+        case "CREATE_GAME_SUCCESS":
           dispatch(createGameSuccess(payload));
           break;
-        case "joinGameSuccess":
+        case "JOIN_GAME_SUCCESS":
           dispatch(joinGameSuccess(payload));
           break;
-        case "spectateGameSuccess":
+        case "SPECTATE_GAME_SUCCESS":
           dispatch(spectateGameSuccess(payload));
           break;
-        case "startGameSuccess":
+        case "START_GAME_SUCCESS":
           dispatch(startGameSuccess(payload));
           break;
-        case "leaveGameSuccess":
+        case "LEAVE_GAME_SUCCESS":
           dispatch(leaveGameSuccess(payload));
           break;
-        case "allGameStatus":
+        case "ALL_GAME_STATUS":
           dispatch(setAllGameStatus(payload));
           break;
-        case "gameDetail":
+        case "GAME_DETAIL":
           dispatch(setGameDetail(payload));
           break;
       }
-      if (type === "error") {
+      if (type === "ERROR") {
         toast.error(`${payload.errorType}: ${payload.error}`);
-      } else if (type !== "allGameStatus" && type !== "gameDetail") {
+      } else if (type !== "ALL_GAME_STATUS" && type !== "GAME_DETAIL") {
         toast.success(`${type}`);
       }
-      console.log("WebSocket message", type, payload);
+      // console.log("WebSocket message", type, payload);
     };
 
     ws.current.onclose = () => {
@@ -133,34 +128,29 @@ export const WebSocketProvider: React.FC<{
     }
   };
 
-  const createGame = (payload: createGamePayload) => {
-    sendMessage("createGame", payload);
+  const createGame = (payload: CreateGamePayload) => {
+    sendMessage("CREATE_GAME", payload);
   };
-  const joinGame = (payload: joinGamePayload) => {
-    sendMessage("joinGame", payload);
+  const joinGame = (payload: JoinGamePayload) => {
+    sendMessage("JOIN_GAME", payload);
   };
-  const spectateGame = (payload: spectateGamePayload) => {
-    sendMessage("spectateGame", payload);
+  const spectateGame = (payload: SpectateGamePayload) => {
+    sendMessage("SPECTATE_GAME", payload);
   };
-  const startGame = (payload: startGamePayload) => {
-    sendMessage("startGame", payload);
+  const startGame = (payload: StartGamePayload) => {
+    sendMessage("START_GAME", payload);
   };
-  const leaveGame = (payload: leaveGamePayload) => {
-    sendMessage("leaveGame", payload);
+  const leaveGame = (payload: LeaveGamePayload) => {
+    sendMessage("LEAVE_GAME", payload);
   };
-  const register = (payload: registerPayload) => {
-    sendMessage("register", payload);
+  const register = (payload: RegisterPayload) => {
+    sendMessage("REGISTER", payload);
   };
-
-  const getPlayerInfo = (payload: getPlayerInfoPayload) => {
-    sendMessage("getPlayerInfo", payload);
+  const login = (payload: LoginPayload) => {
+    sendMessage("LOGIN", payload);
   };
-  const getAllGamesStatus = () => {
-    sendMessage("getAllGamesStatus", {});
-  };
-
-  const makeMove = (payload: makeMovePayload) => {
-    sendMessage("makeMove", payload);
+  const makeMove = (payload: MakeMovePayload) => {
+    sendMessage("MAKE_MOVE", payload);
   };
 
   return (
@@ -172,8 +162,7 @@ export const WebSocketProvider: React.FC<{
         startGame,
         leaveGame,
         register,
-        getPlayerInfo,
-        getAllGamesStatus,
+        login,
         makeMove,
       }}
     >
