@@ -11,13 +11,7 @@ import { toast } from "react-toastify";
 import { GameDetail, Player } from "@/types/webSocket";
 
 const GamePage = () => {
-  const {
-    spectateGame,
-    leaveGame,
-    register,
-    getPlayerInfo,
-    getAllGamesStatus,
-  } = useWebSocket();
+  const { spectateGame, leaveGame, register, login } = useWebSocket();
 
   const { gameOwnerToken, games, playerInfo, currentGame, wsConnected } =
     useSelector((state: RootState) => state.websocket);
@@ -32,10 +26,8 @@ const GamePage = () => {
   useEffect(() => {
     if (!wsConnected) return;
 
-    if (!games) {
-      getAllGamesStatus();
-      return;
-    }
+    if (!games) return;
+
     if (!games?.find((game) => game.gameId === gameId)) {
       router.push("/room");
       toast.error("Game not found");
@@ -76,8 +68,8 @@ const GamePage = () => {
     };
     console.log(playerInfo);
 
-    getPlayerInfo(payload);
-  }, [wsConnected, user]);
+    login(payload);
+  }, [wsConnected, user, playerInfo]);
 
   useEffect(() => {
     if (!wsConnected) return;

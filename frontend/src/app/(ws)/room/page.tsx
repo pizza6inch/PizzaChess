@@ -30,7 +30,7 @@ type sortBy = "GameId" | "Timer" | "Rating" | "People";
 type sortOrder = "asc" | "desc";
 
 export default function Room() {
-  const { createGame, register, getPlayerInfo } = useWebSocket();
+  const { createGame, register, login } = useWebSocket();
 
   const router = useRouter();
 
@@ -202,8 +202,8 @@ export default function Room() {
     const payload = {
       playerToken: playerToken,
     };
-    getPlayerInfo(payload);
-  }, [wsConnected, user]);
+    login(payload);
+  }, [wsConnected, user, playerInfo]);
 
   const handleCreateGame = () => {
     const playerToken = sessionStorage.getItem("playerToken");

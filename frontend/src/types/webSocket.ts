@@ -51,12 +51,14 @@ type MakeMovePayload = {
 type RegisterSuccessPayload = {
   playerToken: string;
   playerInfo: Player;
+  currentGame: GameDetail | null;
+  allGameStatus: GameInfo[];
 };
 
 type LoginSuccessPayload = {
   playerInfo: Player;
   currentGame: GameDetail | null;
-  games: GameInfo[];
+  allGameStatus: GameInfo[];
 };
 
 type CreateGameSuccessPayload = {

@@ -48,16 +48,18 @@ const webSocketSlice = createSlice({
       state.isfetching = action.payload;
     },
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
-      const { playerToken, playerInfo } = action.payload;
-      // state.playerInfo = playerInfo;
-      sessionStorage.setItem("playerToken", playerToken);
-      // state.isfetching = false;
-    },
-    loginSuccess: (state, action: PayloadAction<LoginSuccessPayload>) => {
-      const { playerInfo, currentGame } = action.payload;
+      const { playerToken, playerInfo, currentGame, allGameStatus } =
+        action.payload;
       state.playerInfo = playerInfo;
       state.currentGame = currentGame;
-      state.isfetching = false;
+      state.games = allGameStatus;
+      sessionStorage.setItem("playerToken", playerToken);
+    },
+    loginSuccess: (state, action: PayloadAction<LoginSuccessPayload>) => {
+      const { playerInfo, currentGame, allGameStatus } = action.payload;
+      state.playerInfo = playerInfo;
+      state.currentGame = currentGame;
+      state.games = allGameStatus;
     },
     loginFailed: (state, action: PayloadAction<{}>) => {
       sessionStorage.removeItem("playerToken");
@@ -121,7 +123,7 @@ export const {
   setIsFetching,
   registerSuccess,
   loginSuccess,
-  getPlayerInfoFailed,
+  loginFailed,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,

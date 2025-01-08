@@ -7,6 +7,7 @@ import { setWsConnected } from "@/redux/slices/webSocketSlice";
 import {
   registerSuccess,
   loginSuccess,
+  loginFailed,
   createGameSuccess,
   joinGameSuccess,
   spectateGameSuccess,
@@ -70,6 +71,9 @@ export const WebSocketProvider: React.FC<{
         case "LOGIN_SUCCESS":
           dispatch(loginSuccess(payload));
           break;
+        case "LOGIN_FAILED":
+          dispatch(loginFailed(payload));
+          break;
         case "CREATE_GAME_SUCCESS":
           dispatch(createGameSuccess(payload));
           break;
@@ -97,7 +101,7 @@ export const WebSocketProvider: React.FC<{
       } else if (type !== "ALL_GAME_STATUS" && type !== "GAME_DETAIL") {
         toast.success(`${type}`);
       }
-      // console.log("WebSocket message", type, payload);
+      console.log("WebSocket message", type, payload);
     };
 
     ws.current.onclose = () => {

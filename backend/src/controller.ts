@@ -42,20 +42,19 @@ const register = (ws: WebSocket, payload: RegisterPayload) => {
     users.set(playerToken, user);
 
     // send back to ws
-
+    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
     const response = {
       type: "REGISTER_SUCCESS",
       payload: {
         playerToken,
         playerInfo: user.getInfo(),
         currentGame: null,
+        allGameStatus: allGameStatus,
       },
     };
 
     ws.send(JSON.stringify(response));
     // console.log(JSON.stringify(response))
-
-    broadcastAllGameStatus();
   } catch (e) {
     console.log(`errorMessage: REGISTER_ERROR ${e}`);
     errorHandler(ws, e, `REGISTER`);
