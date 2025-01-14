@@ -11,7 +11,8 @@ import { toast } from "react-toastify";
 import { GameDetail, Player } from "@/types/webSocket";
 
 const GamePage = () => {
-  const { spectateGame, leaveGame, register, login } = useWebSocket();
+  const { spectateGame, leaveGame, register, login, startGame } =
+    useWebSocket();
 
   const { gameOwnerToken, games, playerInfo, currentGame, wsConnected } =
     useSelector((state: RootState) => state.websocket);
@@ -91,9 +92,32 @@ const GamePage = () => {
     // }
   }, [wsConnected, currentGame]);
 
+  const handleLeaveGame = () => {
+    const playerToken = sessionStorage.getItem("playerToken");
+    if (!playerToken) return;
+    const payload = {
+      gameId: gameId,
+      playerToken,
+    };
+    leaveGame(payload);
+    router.push("/room");
+  };
+
+  const handleStartGame = () => {
+    const playerToken = sessionStorage.getItem("playerToken");
+    if (!playerToken) return;
+    if (!gameOwnerToken) return;
+    const payload = {
+      gameId: gameId,
+      gameOwnerToken: gameOwnerToken,
+      playerToken,
+    };
+    startGame(payload);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-4 md:flex-row">
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 md:items-start">
+    <div className="flex flex-col items-center justify-center gap-4 py-4 lg:flex-row">
+      <div className="flex h-full flex-col items-center justify-center gap-4 lg:items-start">
         {currentGame && playerInfo && (
           <PlayerText
             currentGame={currentGame}
@@ -101,7 +125,7 @@ const GamePage = () => {
             role="opponent"
           />
         )}
-        <div className="relative h-[80vw] w-[80vw] md:h-[700px] md:w-[600px]">
+        <div className="relative h-[80vw] w-[80vw] lg:h-[600px] lg:w-[600px]">
           <ChessGame />
 
           <div className="absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] bg-red-700">
@@ -120,7 +144,12 @@ const GamePage = () => {
           />
         )}
       </div>
-      <div className="h-[400px] w-[80vw] rounded-xl bg-slate-200 md:h-full md:w-[400px]"></div>
+      <div className="h-[600px] w-[80vw] rounded-xl bg-slate-200 lg:h-[600px] lg:w-[300px]">
+        {gameOwnerToken && (
+          <button onClick={handleStartGame}>Start Game</button>
+        )}
+        <button onClick={handleLeaveGame}>Leave Game</button>
+      </div>
     </div>
   );
 };
@@ -139,13 +168,13 @@ const PlayerText = ({
   const getOpponent = () => {
     if (currentGame?.black?.id === playerInfo.id) return currentGame?.white;
     if (currentGame?.white?.id === playerInfo.id) return currentGame?.black;
-    return null;
+    return currentGame.black; // spectator
   };
 
   const getSelf = () => {
     if (currentGame?.black?.id === playerInfo.id) return currentGame?.black;
     if (currentGame?.white?.id === playerInfo.id) return currentGame?.white;
-    return null;
+    return currentGame.white; // spectator
   };
 
   const target = role === "opponent" ? getOpponent() : getSelf();
@@ -153,6 +182,6 @@ const PlayerText = ({
   return target ? (
     <p>{`${target?.displayName} (${target?.rating})`}</p>
   ) : (
-    <p>{role === "opponent" ? "等待值得一戰的對手" : "你不在此局中"}</p>
+    <p>等待值得一戰的對手</p>
   );
 };

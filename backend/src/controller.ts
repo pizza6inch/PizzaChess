@@ -42,7 +42,9 @@ const register = (ws: WebSocket, payload: RegisterPayload) => {
     users.set(playerToken, user);
 
     // send back to ws
-    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
+    const allGameStatus = Array.from(games.values()).map((game) =>
+      game.getGameInfo()
+    );
     const response = {
       type: "REGISTER_SUCCESS",
       payload: {
@@ -87,8 +89,12 @@ const login = (ws: WebSocket, payload: LoginPayload) => {
 
     // send back to ws
     // find the game that the user is in
-    const userGame = Array.from(games.values()).find((game) => game.isPlayerInGame(user));
-    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
+    const userGame = Array.from(games.values()).find((game) =>
+      game.isPlayerInGame(user)
+    );
+    const allGameStatus = Array.from(games.values()).map((game) =>
+      game.getGameInfo()
+    );
 
     const response = {
       type: "LOGIN_SUCCESS",
@@ -134,6 +140,7 @@ const createGame = (ws: WebSocket, payload: CreateGamePayload) => {
     const gameOwnerToken = generateToken(game.gameId, user.id);
 
     game.setGameOwnerToken(gameOwnerToken);
+    user.setGameOwnerToken(gameOwnerToken);
 
     games.set(gameOwnerToken, game);
 
@@ -176,7 +183,9 @@ const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
     }
 
     // const game = games.find((game) => game.gameId === gameId);
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -208,6 +217,7 @@ const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
     ws.send(JSON.stringify(response));
 
     broadcastAllGameStatus();
+    broadcastGameDetail(game);
   } catch (e) {
     console.log(`errorMessage: JOIN_GAME_ERROR ${e}`);
     errorHandler(ws, e, `JOIN_GAME`);
@@ -228,7 +238,9 @@ const leaveGame = (ws: WebSocket, payload: LeaveGamePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -243,7 +255,10 @@ const leaveGame = (ws: WebSocket, payload: LeaveGamePayload) => {
     console.log(games);
     console.log(game.getGameOwnerToken());
 
-    if (game.getGameDetail().gameState === "finished" || (game.white === null && game.black === null)) {
+    if (
+      game.getGameDetail().gameState === "finished" ||
+      (game.white === null && game.black === null)
+    ) {
       games.delete(game.getGameOwnerToken());
     }
     // console.log(games);
@@ -281,7 +296,9 @@ const spectateGame = (ws: WebSocket, payload: SpectateGamePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -294,7 +311,9 @@ const spectateGame = (ws: WebSocket, payload: SpectateGamePayload) => {
     // check if the user is already in other game
     if (user.isInGame) {
       // find the game that the user is in
-      const userGame = Array.from(games.values()).find((game) => game.isPlayerInGame(user));
+      const userGame = Array.from(games.values()).find((game) =>
+        game.isPlayerInGame(user)
+      );
       userGame?.leaveGame(user);
     }
 
@@ -380,7 +399,9 @@ const makeMove = (ws: WebSocket, payload: MakeMovePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
+    const game = Array.from(games.values()).find(
+      (game) => game.gameId === gameId
+    );
 
     if (!game) {
       throw new Error("game not found");
@@ -421,7 +442,9 @@ const generateToken = (id: string, dependency: string) => {
 
 const broadcastAllGameStatus = () => {
   const type = "ALL_GAME_STATUS";
-  const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
+  const allGameStatus = Array.from(games.values()).map((game) =>
+    game.getGameInfo()
+  );
 
   const response = {
     type: type,
@@ -455,4 +478,14 @@ const broadcastGameDetail = (game: Game) => {
   console.log(`broadcastGameDetail: `);
 };
 
-export { register, login, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect };
+export {
+  register,
+  login,
+  createGame,
+  joinGame,
+  leaveGame,
+  spectateGame,
+  startGame,
+  makeMove,
+  handleDisconnect,
+};
