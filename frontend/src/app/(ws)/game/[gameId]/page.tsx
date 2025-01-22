@@ -6,34 +6,30 @@ import { useWebSocket } from "@/contexts/WebSocketProvider";
 import { useEffect, useState, useRef, use } from "react";
 
 import ChessGame from "@/components/ChessBoard";
-import { setIsFetching } from "@/redux/slices/webSocketSlice";
+
 import { toast } from "react-toastify";
 import { GameDetail, Player } from "@/types/webSocket";
+import { motion } from "framer-motion";
 
 const GamePage = () => {
-  const { spectateGame, leaveGame, register, login, startGame } =
-    useWebSocket();
+  const { leaveGame, register, login, startGame } = useWebSocket();
 
-  const { gameOwnerToken, games, playerInfo, currentGame, wsConnected } =
-    useSelector((state: RootState) => state.websocket);
+  const { games, playerInfo, currentGame, wsConnected } = useSelector(
+    (state: RootState) => state.websocket,
+  );
 
   const { user } = useSelector((state: RootState) => state.auth);
 
   const pathname = usePathname();
-  const router = useRouter();
 
   const gameId = pathname.split("/")[2];
 
   useEffect(() => {
     if (!wsConnected) return;
-
-    if (!games) return;
-
-    if (!games?.find((game) => game.gameId === gameId)) {
-      router.push("/room");
-      toast.error("Game not found");
-    }
-  }, [wsConnected, games]);
+    if (!playerInfo) return;
+    if (!currentGame) window.location.href = `/room`;
+    if (currentGame?.gameId !== gameId) window.location.href = `/room`;
+  }, [currentGame, playerInfo]);
 
   useEffect(() => {
     if (!wsConnected) return;
@@ -59,38 +55,15 @@ const GamePage = () => {
         if (!user) return;
         handleRegister(user.displayName, user.rating);
       }
-      return;
     }
 
-    if (playerInfo) return;
-
-    const payload = {
-      playerToken: playerToken,
-    };
-    console.log(playerInfo);
-
-    login(payload);
-  }, [wsConnected, user, playerInfo]);
-
-  useEffect(() => {
-    if (!wsConnected) return;
-    const playerToken = sessionStorage.getItem("playerToken");
-    if (!playerToken) return;
-    if (!playerInfo) return;
-
-    if (!currentGame) {
+    if (playerToken) {
       const payload = {
         playerToken: playerToken,
-        gameId: gameId,
       };
-      console.log(currentGame);
-
-      spectateGame(payload);
+      login(payload);
     }
-    // if (currentGame && currentGame.gameId !== gameId) {
-    //   router.push(`/game/${currentGame.gameId}`);
-    // }
-  }, [wsConnected, currentGame]);
+  }, [wsConnected, user]);
 
   const handleLeaveGame = () => {
     const playerToken = sessionStorage.getItem("playerToken");
@@ -99,17 +72,17 @@ const GamePage = () => {
       gameId: gameId,
       playerToken,
     };
+
     leaveGame(payload);
-    router.push("/room");
   };
 
   const handleStartGame = () => {
     const playerToken = sessionStorage.getItem("playerToken");
     if (!playerToken) return;
-    if (!gameOwnerToken) return;
+    if (!playerInfo?.gameOwnerToken) return;
     const payload = {
       gameId: gameId,
-      gameOwnerToken: gameOwnerToken,
+      gameOwnerToken: playerInfo.gameOwnerToken,
       playerToken,
     };
     startGame(payload);
@@ -127,14 +100,15 @@ const GamePage = () => {
         )}
         <div className="relative h-[80vw] w-[80vw] lg:h-[600px] lg:w-[600px]">
           <ChessGame />
-
-          <div className="absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] bg-red-700">
-            {currentGame?.white && currentGame?.black ? (
-              <button>Start Game</button>
-            ) : (
-              <button>Waiting for opponent</button>
-            )}
-          </div>
+          {currentGame?.gameState === "waiting" && (
+            <div className="absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] bg-red-700">
+              {currentGame?.white && currentGame?.black ? (
+                <div>Waiting for game to start</div>
+              ) : (
+                <div>Waiting for opponent</div>
+              )}
+            </div>
+          )}
         </div>
         {currentGame && playerInfo && (
           <PlayerText
@@ -144,11 +118,30 @@ const GamePage = () => {
           />
         )}
       </div>
-      <div className="h-[600px] w-[80vw] rounded-xl bg-slate-200 lg:h-[600px] lg:w-[300px]">
-        {gameOwnerToken && (
-          <button onClick={handleStartGame}>Start Game</button>
-        )}
-        <button onClick={handleLeaveGame}>Leave Game</button>
+      <div className="h-[600px] w-[80vw] rounded-xl bg-gray-800 p-5 lg:h-[600px] lg:w-[300px]">
+        <div className="flex h-full w-full flex-col items-center gap-4">
+          <div className="h-[200px]"></div>
+          <hr className="w-full bg-white" />
+          <div className="flex w-full flex-col items-center gap-4">
+            {playerInfo?.gameOwnerToken && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                className="w-[60%] rounded-xl border border-black bg-red-700 p-4 font-Abril_Fatface text-xl text-white"
+                onClick={handleStartGame}
+              >
+                Start Game
+              </motion.button>
+            )}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="w-[60%] rounded-xl border border-black bg-red-700 p-4 font-Abril_Fatface text-xl text-white"
+              // className="w-[80%] rounded-xl bg-transparent p-4 font-Abril_Fatface text-xl text-red-700"
+              onClick={handleLeaveGame}
+            >
+              Leave Game
+            </motion.button>
+          </div>
+        </div>
       </div>
     </div>
   );

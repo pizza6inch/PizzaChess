@@ -20,20 +20,18 @@ import {
 type InitialState = {
   games: GameInfo[] | null; // 通用訊息的陣列
   playerInfo: Player | null;
-  gameOwnerToken: string;
+  gameOwnerToken: string | null;
   currentGame: GameDetail | null;
   wsConnected: boolean;
-  isfetching: boolean;
 };
 
 // 定義初始狀態
 const initialState: InitialState = {
   games: null,
-  gameOwnerToken: "",
+  gameOwnerToken: null,
   playerInfo: null,
   currentGame: null,
   wsConnected: false,
-  isfetching: false,
 };
 
 // 建立 WebSocket Slice
@@ -44,16 +42,11 @@ const webSocketSlice = createSlice({
     setWsConnected: (state, action: PayloadAction<boolean>) => {
       state.wsConnected = action.payload;
     },
-    setIsFetching: (state, action: PayloadAction<boolean>) => {
-      state.isfetching = action.payload;
-    },
     registerSuccess: (state, action: PayloadAction<RegisterSuccessPayload>) => {
       const { playerToken, playerInfo, currentGame, allGameStatus } =
         action.payload;
-      state.playerInfo = playerInfo;
-      state.currentGame = currentGame;
-      state.games = allGameStatus;
       sessionStorage.setItem("playerToken", playerToken);
+      window.location.reload(); // 重新整理頁面
     },
     loginSuccess: (state, action: PayloadAction<LoginSuccessPayload>) => {
       const { playerInfo, currentGame, allGameStatus } = action.payload;
@@ -64,21 +57,19 @@ const webSocketSlice = createSlice({
     loginFailed: (state, action: PayloadAction<{}>) => {
       sessionStorage.removeItem("playerToken");
       window.location.reload(); // 重新整理頁面
-      state.isfetching = false;
     },
     createGameSuccess: (
       state,
       action: PayloadAction<CreateGameSuccessPayload>,
     ) => {
       const { gameDetail, gameOwnerToken } = action.payload;
-      state.currentGame = gameDetail;
-      state.gameOwnerToken = gameOwnerToken;
-      state.isfetching = false;
+
+      window.location.href = `/game/${gameDetail.gameId}`; // 跳轉到遊戲頁面
     },
     joinGameSuccess: (state, action: PayloadAction<JoinGameSuccessPayload>) => {
       const { gameDetail } = action.payload;
-      state.currentGame = gameDetail;
-      state.isfetching = false;
+
+      window.location.href = `/game/${gameDetail.gameId}`; // 跳轉到遊戲頁面
     },
     spectateGameSuccess: (
       state,
@@ -86,7 +77,7 @@ const webSocketSlice = createSlice({
     ) => {
       const { gameDetail } = action.payload;
       state.currentGame = gameDetail;
-      state.isfetching = false;
+      window.location.href = `/game/${gameDetail.gameId}`; // 跳轉到遊戲頁面
     },
     startGameSuccess: (
       state,
@@ -94,18 +85,17 @@ const webSocketSlice = createSlice({
     ) => {
       const { gameDetail } = action.payload;
       state.currentGame = gameDetail;
-      state.isfetching = false;
     },
     leaveGameSuccess: (
       state,
       action: PayloadAction<LeaveGameSuccessPayload>,
     ) => {
-      state.currentGame = null;
-      state.isfetching = false;
+      window.location.href = "/room";
     },
-    makeMoveSuccess: (state, action: PayloadAction<MakeMoveSuccessPayload>) => {
-      state.isfetching = false;
-    },
+    makeMoveSuccess: (
+      state,
+      action: PayloadAction<MakeMoveSuccessPayload>,
+    ) => {},
     setAllGameStatus: (state, action: PayloadAction<AllGameStatusPayload>) => {
       const { games } = action.payload;
       state.games = games;
@@ -120,7 +110,6 @@ const webSocketSlice = createSlice({
 // 匯出 actions
 export const {
   setWsConnected,
-  setIsFetching,
   registerSuccess,
   loginSuccess,
   loginFailed,

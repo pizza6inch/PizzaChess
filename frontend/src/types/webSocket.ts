@@ -59,6 +59,7 @@ type LoginSuccessPayload = {
   playerInfo: Player;
   currentGame: GameDetail | null;
   allGameStatus: GameInfo[];
+  gameOwnerToken: string | null;
 };
 
 type CreateGameSuccessPayload = {
@@ -105,7 +106,7 @@ type GameDetail = {
   black: Player | null;
   spectators: Player[];
   fen: string;
-  moves: string[];
+  history: string[];
   isEnd: boolean;
   timeLimit: number;
   remainingTime: {
@@ -131,6 +132,7 @@ type Player = {
   displayName: string;
   rating: number;
   isInGame: boolean;
+  gameOwnerToken: string | null;
 };
 
 export type {

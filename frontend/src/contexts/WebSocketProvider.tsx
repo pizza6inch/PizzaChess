@@ -112,11 +112,6 @@ export const WebSocketProvider: React.FC<{
     ws.current.onerror = (error) => {
       console.error("WebSocket error", error);
     };
-
-    // 清理 WebSocket
-    return () => {
-      ws.current?.close();
-    };
   }, [url, dispatch]);
 
   const sendMessage = (type: string, payload: any) => {

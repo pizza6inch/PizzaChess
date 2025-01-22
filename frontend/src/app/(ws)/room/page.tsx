@@ -36,14 +36,8 @@ export default function Room() {
 
   const dispatch = useDispatch();
 
-  const {
-    wsConnected,
-    gameOwnerToken,
-    games,
-    playerInfo,
-    currentGame,
-    isfetching,
-  } = useSelector((state: RootState) => state.websocket);
+  const { wsConnected, gameOwnerToken, games, playerInfo, currentGame } =
+    useSelector((state: RootState) => state.websocket);
 
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -63,112 +57,11 @@ export default function Room() {
     { sortBy: "People" },
   ];
 
-  const testGames: GameInfo[] = [
-    {
-      gameId: "0",
-      white: null,
-      black: {
-        id: "1",
-        displayName: "pizza6inch",
-        rating: 1250,
-        isInGame: true,
-      },
-      spectators: [
-        {
-          id: "1",
-          displayName: "123",
-          rating: 0,
-          isInGame: true,
-        },
-      ],
-      gameState: "waiting",
-      timeLimit: 600,
-      // gameState: 'waiting' | 'in-progress' | 'finished'
-    },
-    {
-      gameId: "1",
-      white: null,
-      black: {
-        id: "1",
-        displayName: "pizza6inch",
-        rating: 1200,
-        isInGame: true,
-      },
-      spectators: [
-        {
-          id: "1",
-          displayName: "123",
-          rating: 0,
-          isInGame: true,
-        },
-      ],
-      gameState: "waiting",
-      timeLimit: 659,
-    },
-    {
-      gameId: "2",
-      white: null,
-      black: {
-        id: "1",
-        displayName: "pizza6inch",
-        rating: 1201,
-        isInGame: true,
-      },
-      spectators: [
-        {
-          id: "1",
-          displayName: "123",
-          rating: 0,
-          isInGame: true,
-        },
-      ],
-      gameState: "waiting",
-      timeLimit: 659,
-    },
-    {
-      gameId: "3",
-      white: {
-        id: "1",
-        displayName: "pizza6inch",
-        rating: 1203,
-        isInGame: true,
-      },
-      black: null,
-      spectators: [
-        {
-          id: "1",
-          displayName: "123",
-          rating: 0,
-          isInGame: true,
-        },
-      ],
-      gameState: "in-progress",
-      timeLimit: 300,
-    },
-    {
-      gameId: "4",
-      white: {
-        id: "1",
-        displayName: "pizza6inch",
-        rating: 1204,
-        isInGame: true,
-      },
-      black: {
-        id: "1",
-        displayName: "pizza6inch",
-        rating: 1205,
-        isInGame: true,
-      },
-      spectators: [],
-      gameState: "finished",
-      timeLimit: 450,
-    },
-  ];
-
   useEffect(() => {
     if (!wsConnected) return;
-    if (currentGame) router.push(`/game/${currentGame.gameId}`);
-  }, [wsConnected, currentGame, router]);
+    if (!playerInfo) return;
+    if (currentGame) window.location.href = `/game/${currentGame.gameId}`;
+  }, [playerInfo]);
 
   useEffect(() => {
     if (!wsConnected) return;
@@ -194,16 +87,15 @@ export default function Room() {
         if (!user) return;
         handleRegister(user.displayName, user.rating);
       }
-      return;
     }
 
-    if (playerInfo) return;
-
-    const payload = {
-      playerToken: playerToken,
-    };
-    login(payload);
-  }, [wsConnected, user, playerInfo]);
+    if (playerToken) {
+      const payload = {
+        playerToken: playerToken,
+      };
+      login(payload);
+    }
+  }, [wsConnected, user]);
 
   const handleCreateGame = () => {
     const playerToken = sessionStorage.getItem("playerToken");

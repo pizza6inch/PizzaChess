@@ -15,10 +15,10 @@ const jwt = require("jsonwebtoken");
 import { WebSocket } from "ws";
 
 import { Game } from "./Game";
-import { User } from "./User";
+import { Player } from "./Player";
 
 const games = new Map<string, Game>(); // key: gameOwnerToken, value: Game
-const users = new Map<string, User>(); // key: playerToken, value: User
+const users = new Map<string, Player>(); // key: playerToken, value: User
 const WebSockets: WebSocket[] = [];
 let userCount = 0;
 let gameCount = 0;
@@ -35,16 +35,14 @@ const register = (ws: WebSocket, payload: RegisterPayload) => {
 
     const userId = (userCount + 1).toString();
     userCount += 1;
-    const user = new User(userId, displayName, rating, ws);
+    const user = new Player(userId, displayName, rating, ws);
 
     const playerToken = generateToken(userId, displayName);
 
     users.set(playerToken, user);
 
     // send back to ws
-    const allGameStatus = Array.from(games.values()).map((game) =>
-      game.getGameInfo()
-    );
+    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
     const response = {
       type: "REGISTER_SUCCESS",
       payload: {
@@ -89,12 +87,8 @@ const login = (ws: WebSocket, payload: LoginPayload) => {
 
     // send back to ws
     // find the game that the user is in
-    const userGame = Array.from(games.values()).find((game) =>
-      game.isPlayerInGame(user)
-    );
-    const allGameStatus = Array.from(games.values()).map((game) =>
-      game.getGameInfo()
-    );
+    const userGame = Array.from(games.values()).find((game) => game.isPlayerInGame(user));
+    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
 
     const response = {
       type: "LOGIN_SUCCESS",
@@ -183,9 +177,7 @@ const joinGame = (ws: WebSocket, payload: JoinGamePayload) => {
     }
 
     // const game = games.find((game) => game.gameId === gameId);
-    const game = Array.from(games.values()).find(
-      (game) => game.gameId === gameId
-    );
+    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
 
     if (!game) {
       throw new Error("game not found");
@@ -238,9 +230,7 @@ const leaveGame = (ws: WebSocket, payload: LeaveGamePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find(
-      (game) => game.gameId === gameId
-    );
+    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
 
     if (!game) {
       throw new Error("game not found");
@@ -252,16 +242,11 @@ const leaveGame = (ws: WebSocket, payload: LeaveGamePayload) => {
 
     game.leaveGame(user);
 
-    console.log(games);
-    console.log(game.getGameOwnerToken());
-
-    if (
-      game.getGameDetail().gameState === "finished" ||
-      (game.white === null && game.black === null)
-    ) {
+    if (!game.white && !game.black && game.spectators.length === 0) {
       games.delete(game.getGameOwnerToken());
+    } else if (game.getGameState() !== "waiting" && (!game.black || !game.white)) {
+      // game.reset();
     }
-    // console.log(games);
 
     user.isInGame = false;
 
@@ -272,10 +257,10 @@ const leaveGame = (ws: WebSocket, payload: LeaveGamePayload) => {
       },
     };
 
-    // console.log(JSON.stringify(response));
     ws.send(JSON.stringify(response));
 
     broadcastAllGameStatus();
+    broadcastGameDetail(game);
   } catch (e) {
     console.log(`errorMessage: LEAVE_GAME_ERROR ${e}`);
     errorHandler(ws, e, `LEAVE_GAME`);
@@ -296,9 +281,7 @@ const spectateGame = (ws: WebSocket, payload: SpectateGamePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find(
-      (game) => game.gameId === gameId
-    );
+    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
 
     if (!game) {
       throw new Error("game not found");
@@ -311,9 +294,7 @@ const spectateGame = (ws: WebSocket, payload: SpectateGamePayload) => {
     // check if the user is already in other game
     if (user.isInGame) {
       // find the game that the user is in
-      const userGame = Array.from(games.values()).find((game) =>
-        game.isPlayerInGame(user)
-      );
+      const userGame = Array.from(games.values()).find((game) => game.isPlayerInGame(user));
       userGame?.leaveGame(user);
     }
 
@@ -399,9 +380,7 @@ const makeMove = (ws: WebSocket, payload: MakeMovePayload) => {
       WebSockets.push(ws);
     }
 
-    const game = Array.from(games.values()).find(
-      (game) => game.gameId === gameId
-    );
+    const game = Array.from(games.values()).find((game) => game.gameId === gameId);
 
     if (!game) {
       throw new Error("game not found");
@@ -441,51 +420,47 @@ const generateToken = (id: string, dependency: string) => {
 };
 
 const broadcastAllGameStatus = () => {
-  const type = "ALL_GAME_STATUS";
-  const allGameStatus = Array.from(games.values()).map((game) =>
-    game.getGameInfo()
-  );
+  try {
+    const type = "ALL_GAME_STATUS";
+    const allGameStatus = Array.from(games.values()).map((game) => game.getGameInfo());
 
-  const response = {
-    type: type,
-    payload: { games: allGameStatus },
-  };
+    const response = {
+      type: type,
+      payload: { games: allGameStatus },
+    };
 
-  for (const client of WebSockets) {
-    client.send(JSON.stringify(response));
+    for (const client of WebSockets) {
+      client.send(JSON.stringify(response));
+    }
+    console.log(`broadcastAllGameStatus:`);
+  } catch (e) {
+    console.log(`errorMessage: broadcastAllGameStatus ${e}`);
   }
-  console.log(`broadcastAllGameStatus:`);
 };
 
 const broadcastGameDetail = (game: Game) => {
-  const response = {
-    type: "GAME_DETAIL",
-    payload: {
-      game: game.getGameDetail(),
-    },
-  };
+  try {
+    const response = {
+      type: "GAME_DETAIL",
+      payload: {
+        game: game.getGameDetail(),
+      },
+    };
 
-  for (const player of [game.white, game.black]) {
-    if (player) {
-      player.ws.send(JSON.stringify(response));
+    for (const player of [game.white, game.black]) {
+      if (player) {
+        player.ws.send(JSON.stringify(response));
+      }
     }
-  }
 
-  for (const spectator of game.spectators) {
-    spectator.ws.send(JSON.stringify(response));
-  }
+    for (const spectator of game.spectators) {
+      spectator.ws.send(JSON.stringify(response));
+    }
 
-  console.log(`broadcastGameDetail: `);
+    console.log(`broadcastGameDetail: `);
+  } catch (e) {
+    console.log(`errorMessage: broadcastGameDetail ${e}`);
+  }
 };
 
-export {
-  register,
-  login,
-  createGame,
-  joinGame,
-  leaveGame,
-  spectateGame,
-  startGame,
-  makeMove,
-  handleDisconnect,
-};
+export { register, login, createGame, joinGame, leaveGame, spectateGame, startGame, makeMove, handleDisconnect };

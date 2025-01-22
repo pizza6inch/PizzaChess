@@ -1,9 +1,9 @@
 import WebSocket from "ws";
 
-export class User {
+export class Player {
   public id: string;
   public displayName: string;
-  private rating: Number;
+  private rating: number;
   public ws: WebSocket;
   public isInGame: boolean;
   private gameOwnerToken: string | null;
@@ -31,6 +31,17 @@ export class User {
       displayName: this.displayName,
       rating: this.rating,
       isInGame: this.isInGame,
+      gameOwnerToken: this.gameOwnerToken,
     };
+  }
+
+  public lose() {
+    this.isInGame = false;
+    this.rating -= 10;
+  }
+
+  public win() {
+    this.isInGame = false;
+    this.rating += 10;
   }
 }

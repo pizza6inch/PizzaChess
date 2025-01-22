@@ -5,6 +5,8 @@ import { register, createGame, joinGame, startGame, leaveGame, spectateGame, mak
 export const messageHandler = (ws: WebSocket, data: RawData) => {
   try {
     const { type, payload } = JSON.parse(data.toString());
+    if (type === "SPECTATE_GAME") console.log(payload);
+
     switch (type) {
       case "REGISTER":
         register(ws, payload);
